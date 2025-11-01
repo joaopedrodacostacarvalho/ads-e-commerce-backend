@@ -3,34 +3,34 @@ import { Product } from './product.entity';
 
 @Injectable()
 export class ProductService {
-    private products: Product[] = [];
+  private products: Product[] = [];
 
-    findAll(): Product[] {
-        return this.products;
-    }
+  findAll(): Product[] {
+    return this.products;
+  }
 
-    findOne(name: string): Product {
-        const product = this.products
-            .find(prod => prod.name === name);
-        if (product === undefined) {
-            throw new Error('Prodtuo não encontrado');
-        }
-        return product;
+  findOne(id: number): Product {
+    const product = this.products
+      .find(prod => prod.id === id);
+    if (product === undefined) {
+      throw new Error('Prodtuo não encontrado');
     }
+    return product;
+  }
 
-    create(product: Product) {
-        this.products.push(product);
-    }
+  create(product: Product) {
+    this.products.push(product);
+  }
 
-    update(name: string, updatedProduct: Product) {
-        const productIdx = this.products
-            .findIndex(prod => prod.name === name);
-        if (productIdx > -1) {
-            this.products[productIdx] = updatedProduct;
-        }
+  update(id: number, updatedProduct: Product) {
+    const productIdx = this.products
+      .findIndex(prod => prod.id === id);
+    if (productIdx > -1) {
+      this.products[productIdx] = updatedProduct;
     }
+  }
 
-    remove(name: string) {
-        this.products = this.products.filter(prod => prod.name !== name);
-    }
+  remove(id: number) {
+    this.products = this.products.filter(prod => prod.id !== id);
+  }
 }
