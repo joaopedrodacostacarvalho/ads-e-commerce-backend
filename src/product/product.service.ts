@@ -1,36 +1,41 @@
-import { Injectable } from '@nestjs/common';
-import { Product } from './product.entity';
+import { Injectable, Logger } from '@nestjs/common';
+import { CreateProductDto } from './dto/create-product.dto';
+import { UpdateProductDto } from './dto/update-product.dto';
+import { Product } from './entities/product.entity';
 
 @Injectable()
 export class ProductService {
   private products: Product[] = [];
+  logger = new Logger(ProductService.name);
 
-  findAll(): Product[] {
+  create(createProductDto: CreateProductDto) {
+    const newProduct: Product = {
+      ...createProductDto,
+      isActive: true,
+      id: this.products.length + 1,
+    };
+    this.products.push(newProduct);
+    return `Sucesso na criação do produto #${newProduct.id}`;
+  }
+
+  findAll() {
     return this.products;
   }
 
-  findOne(id: number): Product {
-    const product = this.products
-      .find(prod => prod.id === id);
+  findOne(id: number) {
+    return this.products.find((product) => product.id === id);
+  }
+
+  update(id: number, updateProductDto: UpdateProductDto) {
+    let product = this.products[id - 1];
     if (product === undefined) {
-      throw new Error('Prodtuo não encontrado');
+      throw new Error(`O produto não foi encontrado`!);
     }
-    return product;
-  }
-
-  create(product: Product) {
-    this.products.push(product);
-  }
-
-  update(id: number, updatedProduct: Product) {
-    const productIdx = this.products
-      .findIndex(prod => prod.id === id);
-    if (productIdx > -1) {
-      this.products[productIdx] = updatedProduct;
-    }
+    this.products[id - 1] = { ...product, ...updateProductDto };
+    return `O produto #${id} foi atualizado`;
   }
 
   remove(id: number) {
-    this.products = this.products.filter(prod => prod.id !== id);
+    return `O produto #${id} foi removido`;
   }
 }
