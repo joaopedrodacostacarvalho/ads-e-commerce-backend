@@ -1,6 +1,6 @@
 import { Exclude } from "class-transformer";
 import { Address } from "src/address/entities/address.entity";
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity('client')
 export class Client {
@@ -23,7 +23,8 @@ export class Client {
   @CreateDateColumn({ type: 'timestamp' })
   registrationDate: Date;
 
-  // TODO fazer ele many to one
-  @Column()
+  @OneToMany(() => Address, (address) => address.client, {
+    cascade: true,
+  })
   addresses: Address[];
 }
