@@ -1,9 +1,8 @@
-import { Product } from "src/product/entities/product.entity";
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Product } from 'src/product/entities/product.entity';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity('category')
 export class Category {
-
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -14,5 +13,5 @@ export class Category {
   products: Product[];
 
   @Column({ default: true })
-  isActive: boolean
+  isActive: boolean;
 }

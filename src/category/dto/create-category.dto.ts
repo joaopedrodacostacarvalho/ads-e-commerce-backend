@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, MaxLength } from "class-validator";
+import { IsNotEmpty, IsString, MaxLength } from 'class-validator';
 
 export class CreateCategoryDto {
   @IsNotEmpty({ message: 'O nome da categoria é obrigatório' })
