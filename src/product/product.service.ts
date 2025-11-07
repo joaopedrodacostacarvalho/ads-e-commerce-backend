@@ -1,41 +1,78 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { Product } from './entities/product.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Between, Like, Repository } from 'typeorm';
+import { CategoryService } from 'src/category/category.service';
+import { ProductFilterDto } from './dto/product-filter.dto';
+import { min } from 'rxjs';
 
 @Injectable()
 export class ProductService {
-  private products: Product[] = [];
-  logger = new Logger(ProductService.name);
+  constructor(
+    @InjectRepository(Product)
+    private productRepository: Repository<Product>,
+    private categoryService: CategoryService,
+  ) { }
 
-  create(createProductDto: CreateProductDto) {
-    const newProduct: Product = {
-      ...createProductDto,
-      isActive: true,
-      id: this.products.length + 1,
-    };
-    this.products.push(newProduct);
-    return `Sucesso na criação do produto #${newProduct.id}`;
+  async create(createProductDto: CreateProductDto): Promise<Product> {
+    await this.categoryService.findOne(createProductDto.categoryId);
+
+    const newProduct = this.productRepository.create(createProductDto);
+    return this.productRepository.save(newProduct);
   }
 
-  findAll() {
-    return this.products;
-  }
+  async findAll(filterDto: ProductFilterDto): Promise<Product[]> {
+    const { name, categoryId, minPrice, maxPrice } = filterDto;
 
-  findOne(id: number) {
-    return this.products.find((product) => product.id === id);
-  }
+    const where: any = {};
 
-  update(id: number, updateProductDto: UpdateProductDto) {
-    let product = this.products[id - 1];
-    if (product === undefined) {
-      throw new Error(`O produto não foi encontrado`!);
+    if (name) {
+      where.name = Like(`%${name}%`);
     }
-    this.products[id - 1] = { ...product, ...updateProductDto };
-    return `O produto #${id} foi atualizado`;
+
+    if (categoryId) {
+      where.categoryId = categoryId;
+    }
+
+    if (minPrice && maxPrice) {
+      where.price = Between(minPrice, maxPrice);
+    } else if (minPrice) {
+      where.price = Between(minPrice, Number.MAX_SAFE_INTEGER);
+    } else if (maxPrice) {
+      where.price = Between(0, maxPrice);
+    }
+
+    return this.productRepository.find({ where, order: { name: 'ASC' } });
   }
 
-  remove(id: number) {
-    return `O produto #${id} foi removido`;
+  async findOne(id: number): Promise<Product> {
+    const product = await this.productRepository.findOne({ where: { id } });
+
+    if (!product) {
+      throw new NotFoundException(`O produto com #${id} não foi encontrado`);
+    }
+
+    return product;
+  }
+
+  async update(id: number, updateProductDto: UpdateProductDto): Promise<Product> {
+    const product = await this.findOne(id);
+
+    if (updateProductDto.categoryId) {
+      await this.categoryService.findOne(updateProductDto.categoryId);
+    }
+
+    Object.assign(product, updateProductDto);
+    return this.productRepository.save(product);
+  }
+
+  async remove(id: number): Promise<void> {
+    const product = await this.findOne(id);
+
+    product.isActive = false;
+
+    await this.productRepository.save(product);
   }
 }

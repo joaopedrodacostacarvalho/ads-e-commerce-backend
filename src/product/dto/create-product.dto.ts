@@ -1,17 +1,15 @@
-import { Type } from 'class-transformer';
 import {
-  IsArray,
+  IsInt,
   IsNotEmpty,
   IsNumber,
+  IsOptional,
   IsPositive,
   IsString,
   IsUrl,
   MaxLength,
   Min,
   MinLength,
-  ValidateNested,
 } from 'class-validator';
-import { Category } from 'src/category/entities/category.entity';
 
 export class CreateProductDto {
   @IsNotEmpty({ message: `Nome do produto necessário` })
@@ -20,20 +18,34 @@ export class CreateProductDto {
   @MaxLength(255, { message: `Conter até 255 caracteres` })
   name: string;
 
-  @IsNumber({
-    allowInfinity: false,
-    allowNaN: false,
-    maxDecimalPlaces: 2,
-  }, { message: `O preço deve ser um número` })
+  @IsOptional()
+  @IsString({ message: `Descrição do produto precisa ser uma string` })
+  description?: string;
+
+
+  @IsNumber(
+    {
+      allowInfinity: false,
+      allowNaN: false,
+      maxDecimalPlaces: 2,
+    },
+    { message: `O preço deve ser um número` },
+  )
   @IsPositive({ message: `O preço deve ser positivo` })
   @IsNotEmpty({ message: `Preço é necessário` })
-  @Min(0.10, { message: `O valor mínimo deve ser R$ 0,10` })
+  @Min(0.1, { message: `O valor mínimo deve ser R$ 0,10` })
   price: number;
 
-  @IsArray({ message: `Categorias precisam ser um array` })
-  @ValidateNested()
-  @Type(() => Category)
-  categories: Category[];
+  @IsNotEmpty({ message: `O estoque do produto é necessário` })
+  @IsInt({ message: `O estoque deve ser um número inteiro` })
+  @IsPositive({ message: `O estoque deve ser positivo` })
+  stock: number;
+
+  @IsNotEmpty({ message: `O id de ao menos uma categoria é necessário` })
+  @IsInt({ message: `O id da categoria deve ser um número inteiro` })
+  @IsPositive({ message: `O id da categoria deve ser positivo` })
+  categoryId: number;
+
 
   @IsUrl({}, { message: `Precisa ser uma URL válida` })
   imageUrl: string;
