@@ -7,7 +7,7 @@
   "license": "UNLICENSED",
   "scripts": {
     "build": "nest build",
-    "docker-compose:up": "docker compose -f docker-compose.yml up --build -d"
+    "docker-compose:up": "docker compose -f docker-compose.yml up --build -d",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",
