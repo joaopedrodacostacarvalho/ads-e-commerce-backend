@@ -1,16 +1,12 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
-import { CreateOrderDto } from './dto/create-order.dto';
-import { UpdateOrderDto } from './dto/update-order.dto';
-import { InjectRepository } from '@nestjs/typeorm';
-import { ClientService } from 'src/client/client.service';
-import { ProductService } from 'src/product/product.service';
-import { Repository } from 'typeorm';
-import { Order } from './entities/order.entity';
-import { OrderStatus } from './enums/order-status.enum';
+import { Injectable, NotFoundException, BadRequestException } from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
+import { ClientService } from "src/client/client.service";
+import { ProductService } from "src/product/product.service";
+import { Repository } from "typeorm";
+import { CreateOrderDto } from "./dto/create-order.dto";
+import { Order } from "./entities/order.entity";
+import { OrderStatus } from "./enums/order-status.enum";
+import { UpdateOrderDto } from "./dto/update-order.dto";
 
 @Injectable()
 export class OrderService {
@@ -19,9 +15,11 @@ export class OrderService {
     private orderRepository: Repository<Order>,
     private clientService: ClientService,
     private productService: ProductService, // Para débito/crédito de estoque
-  ) {}
+  ) { }
 
+  // Verifica se o pedido pode ser editado
   private isEditable(status: OrderStatus): boolean {
+    // REGRA: Não permitir edição em pedidos pagos
     return status !== OrderStatus.PAID && status !== OrderStatus.CANCELLED;
   }
 
@@ -30,6 +28,11 @@ export class OrderService {
     const newOrder = this.orderRepository.create(createOrderDto);
     return this.orderRepository.save(newOrder);
   }
+
+  async findAll(id: number): Promise<Order[]> {
+    return this.orderRepository.findBy({ clientId: id });
+  }
+
 
   async findOne(id: number): Promise<Order> {
     const order = await this.orderRepository.findOne({ where: { id } }); // 'eager: true' carrega os itens
@@ -40,17 +43,13 @@ export class OrderService {
     return order;
   }
 
-  async findAll(): Promise<Order[]> {
-    return this.orderRepository.find();
-  }
-
   async recalculateTotals(orderId: number): Promise<Order> {
     const order = await this.findOne(orderId); // Carrega com os itens (eager: true)
 
     let newSubtotal = 0;
     let newTotalQuantity = 0;
 
-    order.items.forEach((item) => {
+    order.items.forEach(item => {
       newSubtotal += item.subtotal;
       newTotalQuantity += item.quantity;
     });
@@ -70,16 +69,13 @@ export class OrderService {
     const oldStatus = order.status;
     const newStatus = updateStatusDto.status;
 
-    //  Estoque só deve ser debitado após o pagamento confirmado
     if (newStatus === OrderStatus.PAID && oldStatus !== OrderStatus.PAID) {
       // Debita o estoque para todos os itens
       for (const item of order.items) {
         await this.productService.debitStock(item.productId, item.quantity);
       }
-    } else if (
-      newStatus === OrderStatus.CANCELLED &&
-      oldStatus === OrderStatus.PAID
-    ) {
+    }
+    else if (newStatus === OrderStatus.CANCELLED && oldStatus === OrderStatus.PAID) {
       // Credita o estoque de volta
       for (const item of order.items) {
         await this.productService.creditStock(item.productId, item.quantity);
@@ -94,9 +90,7 @@ export class OrderService {
     const order = await this.findOne(id);
 
     if (!this.isEditable(order.status)) {
-      throw new BadRequestException(
-        `Não é possível remover um pedido com status ${order.status}`,
-      );
+      throw new BadRequestException(`Não é possível remover um pedido com status ${order.status}`);
     }
 
     await this.orderRepository.delete(id);

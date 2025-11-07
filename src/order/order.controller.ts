@@ -17,7 +17,7 @@ import { UpdateOrderDto } from './dto/update-order.dto';
 
 @Controller('order')
 export class OrderController {
-  constructor(private readonly orderService: OrderService) {}
+  constructor(private readonly orderService: OrderService) { }
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
@@ -25,9 +25,9 @@ export class OrderController {
     return this.orderService.create(createOrderDto);
   }
 
-  @Get()
-  findAll(): Promise<Order[]> {
-    return this.orderService.findAll();
+  @Get('/order/:id')
+  findAll(@Param('id', ParseIntPipe) id: number): Promise<Order[]> {
+    return this.orderService.findAll(id);
   }
 
   @Get(':id')

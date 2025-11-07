@@ -9,5 +9,6 @@ import { ClientModule } from 'src/client/client.module';
   imports: [TypeOrmModule.forFeature([Address]), ClientModule],
   controllers: [AddressController],
   providers: [AddressService],
+  exports: [AddressService],
 })
-export class AddressModule {}
+export class AddressModule { }
