@@ -6,7 +6,6 @@ import { ProductModule } from './product/product.module';
 import { ClientModule } from './client/client.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AddressModule } from './address/address.module';
-import { OrderController } from './order/order.controller';
 import { OrderModule } from './order/order.module';
 import { OrderItemModule } from './order-item/order-item.module';
 
@@ -29,7 +28,7 @@ import { OrderItemModule } from './order-item/order-item.module';
     OrderModule,
     OrderItemModule,
   ],
-  controllers: [AppController, OrderController],
+  controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }
