@@ -13,7 +13,7 @@ export class ProductService {
     @InjectRepository(Product)
     private productRepository: Repository<Product>,
     private categoryService: CategoryService,
-  ) { }
+  ) {}
 
   async create(createProductDto: CreateProductDto): Promise<Product> {
     await this.categoryService.findOne(createProductDto.categoryId);
