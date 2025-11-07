@@ -9,7 +9,7 @@ export class Category {
   id: number;
 
   @ApiProperty({ description: 'Nome da Categoria', example: 'Eletrônicos' })
-  @Column({ unique: true, length: 100 })
+  @Column({ unique: true })
   name: string;
 
   @ApiProperty({ type: () => [Product], description: 'Lista de produtos vinculados a esta categoria' })

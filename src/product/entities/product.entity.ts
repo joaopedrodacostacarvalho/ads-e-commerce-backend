@@ -15,7 +15,7 @@ export class Product {
   id: number;
 
   @ApiProperty({ description: 'Nome do produto', example: 'Notebook Gamer X' })
-  @Column({ length: 255 })
+  @Column()
   name: string;
 
   @ApiProperty({ description: 'Descrição detalhada do produto', example: 'Processador Intel Core i7...', nullable: true })

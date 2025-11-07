@@ -8,6 +8,12 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AddressModule } from './address/address.module';
 import { OrderModule } from './order/order.module';
 import { OrderItemModule } from './order-item/order-item.module';
+import { Address } from './address/entities/address.entity';
+import { Client } from './client/entities/client.entity';
+import { Product } from './product/entities/product.entity';
+import { Order } from './order/entities/order.entity';
+import { OrderItem } from './order-item/entities/order-item.entity';
+import { Category } from './category/entities/category.entity';
 
 @Module({
   imports: [
@@ -18,7 +24,14 @@ import { OrderItemModule } from './order-item/order-item.module';
       database: 'ads_e_commerce',
       username: 'testuser',
       password: 'testuser123',
-      entities: [__dirname + '/**/*.entity{.ts,.js'],
+      entities: [
+        Address,
+        Category,
+        Client,
+        Order,
+        OrderItem,
+        Product,
+      ],
       synchronize: true,
     }),
     ProductModule,

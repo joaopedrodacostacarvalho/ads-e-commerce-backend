@@ -19,25 +19,25 @@ export class Order {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ApiProperty({ 
-    description: 'Status atual do pedido', 
+  @ApiProperty({
+    description: 'Status atual do pedido',
     enum: OrderStatus, // NOVO: Usa o Enum
-    example: OrderStatus.OPEN 
+    example: OrderStatus.OPEN
   })
   @Column({ type: 'enum', enum: OrderStatus, default: OrderStatus.OPEN })
   status: OrderStatus;
 
-  @ApiProperty({ description: 'Subtotal (soma dos preços dos itens)', example: 150.99, type: Number }) 
+  @ApiProperty({ description: 'Subtotal (soma dos preços dos itens)', example: 150.99, type: Number })
   // Subtotal (preço total dos itens sem descontos/frete)
   @Column({ type: 'decimal', precision: 10, scale: 2, default: 0.0 })
   subtotal: number;
 
-  @ApiProperty({ description: 'Quantidade total de produtos diferentes no pedido', example: 3, type: Number }) 
+  @ApiProperty({ description: 'Quantidade total de produtos diferentes no pedido', example: 3, type: Number })
   // Quantidade total de itens no pedido
   @Column({ type: 'int', default: 0 })
   totalQuantity: number;
 
-  @ApiProperty({ description: 'Total final do pedido (subtotal + frete - descontos)', example: 150.99, type: Number }) 
+  @ApiProperty({ description: 'Total final do pedido (subtotal + frete - descontos)', example: 150.99, type: Number })
   // Total final (subtotal + frete - descontos)
   // Por simplicidade, usaremos igual ao subtotal por enquanto
   @Column({ type: 'decimal', precision: 10, scale: 2, default: 0.0 })
@@ -45,30 +45,30 @@ export class Order {
 
   // RELACIONAMENTOS: Cliente
 
-  @ApiProperty({ description: 'ID do Cliente proprietário deste pedido', example: 5, type: Number }) 
+  @ApiProperty({ description: 'ID do Cliente proprietário deste pedido', example: 5, type: Number })
   @Column({ type: 'int' })
   clientId: number; // Chave estrangeira
 
-  @ApiProperty({ description: 'Objeto Cliente (relação)', type: () => Client }) 
-  @ManyToOne(() => Client, { onDelete: 'SET NULL' })
+  @ApiProperty({ description: 'Objeto Cliente (relação)', type: () => Client })
+  @ManyToOne(() => Client, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'clientId' })
   client: Client;
 
   // RELACIONAMENTOS: Itens do Pedido
 
-  @ApiProperty({ description: 'Lista de itens do pedido (relação)', type: () => [OrderItem] }) 
+  @ApiProperty({ description: 'Lista de itens do pedido (relação)', type: () => [OrderItem] })
   @OneToMany(() => OrderItem, (orderItem) => orderItem.order, {
     cascade: ['insert', 'update'], // Salva itens junto com o pedido
     eager: true, // Carrega os itens automaticamente
   })
   items: OrderItem[];
 
-  @ApiProperty({ description: 'Data de criação do pedido', example: '2025-11-07T09:00:00.000Z' }) 
+  @ApiProperty({ description: 'Data de criação do pedido', example: '2025-11-07T09:00:00.000Z' })
   // Data e hora de criação
   @CreateDateColumn({ type: 'timestamp' })
   createdAt: Date;
 
-  @ApiProperty({ description: 'Data da última atualização do pedido', example: '2025-11-07T09:05:00.000Z' }) 
+  @ApiProperty({ description: 'Data da última atualização do pedido', example: '2025-11-07T09:05:00.000Z' })
   // Data e hora da última atualização
   @UpdateDateColumn({ type: 'timestamp' })
   updatedAt: Date;
