@@ -77,4 +77,42 @@ export class ProductService {
 
     await this.productRepository.save(product);
   }
+
+  async debitStock(productId: number, quantity: number): Promise<void> {
+    const product = await this.productRepository.findOne({
+      where: { id: productId },
+    });
+
+    if (!product) {
+      throw new NotFoundException(
+        `Produto com ID ${productId} não encontrado para débito de estoque`,
+      );
+    }
+
+    if (product.stock < quantity) {
+      throw new Error(
+        `Estoque insuficiente para o produto ${product.name}. Disponível: ${product.stock}, Solicitado: ${quantity}`,
+      );
+    }
+
+    product.stock -= quantity;
+    await this.productRepository.save(product);
+  }
+
+  async creditStock(productId: number, quantity: number): Promise<void> {
+    const product = await this.productRepository.findOne({
+      where: { id: productId },
+    });
+
+    if (!product) {
+      // Loga, mas não lança erro fatal (pode ser um produto antigo/deletado)
+      console.warn(
+        `Produto com ID ${productId} não encontrado para crédito de estoque`,
+      );
+      return;
+    }
+
+    product.stock += quantity;
+    await this.productRepository.save(product);
+  }
 }
