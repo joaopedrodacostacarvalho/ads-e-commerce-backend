@@ -1,5 +1,12 @@
-import { Client } from "src/client/entities/client.entity";
-import { Column, Entity, Index, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Client } from 'src/client/entities/client.entity';
+import {
+  Column,
+  Entity,
+  Index,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity('address')
 @Index(['cleindId', 'isDefault'])
@@ -8,19 +15,19 @@ export class Address {
   id: number;
 
   @Column({ length: 100 })
-  street: string
+  street: string;
 
   @Column({ length: 10 })
-  number: number
+  number: number;
 
   @Column({ length: 100, nullable: true })
-  complement: string
+  complement: string;
 
   @Column({ length: 100 })
-  city: string
+  city: string;
 
   @Column({ length: 100 })
-  state: string
+  state: string;
 
   @Column({ length: 10 })
   zipCode: string;
@@ -35,5 +42,5 @@ export class Address {
     onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'clientId' })
-  client: Client
+  client: Client;
 }
