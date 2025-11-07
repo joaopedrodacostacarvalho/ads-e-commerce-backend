@@ -18,12 +18,6 @@ async function bootstrap() {
     .setTitle('Ads E-commerce Backend')
     .setDescription('Um projeto da cadeira de web III')
     .setVersion('1.0')
-    .addTag('Produtos', 'Operações de CRUD e filtros de produtos.')
-    .addTag('Categorias', 'Operações de CRUD de categorias.')
-    .addTag('Clientes', 'Operações de CRUD de clientes.')
-    .addTag('Endereços', 'Operações de CRUD de endereços do cliente.')
-    .addTag('Pedidos', 'Gerenciamento de pedidos e status.')
-    .addTag('Itens do Pedido', 'Adição/remoção de itens em um pedido.')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
