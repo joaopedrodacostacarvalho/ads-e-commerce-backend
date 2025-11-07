@@ -6,7 +6,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Between, Like, Repository } from 'typeorm';
 import { CategoryService } from 'src/category/category.service';
 import { ProductFilterDto } from './dto/product-filter.dto';
-import { min } from 'rxjs';
 
 @Injectable()
 export class ProductService {
@@ -57,7 +56,10 @@ export class ProductService {
     return product;
   }
 
-  async update(id: number, updateProductDto: UpdateProductDto): Promise<Product> {
+  async update(
+    id: number,
+    updateProductDto: UpdateProductDto,
+  ): Promise<Product> {
     const product = await this.findOne(id);
 
     if (updateProductDto.categoryId) {

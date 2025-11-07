@@ -17,7 +17,7 @@ import { ProductFilterDto } from './dto/product-filter.dto';
 
 @Controller('product')
 export class ProductController {
-  constructor(private readonly productService: ProductService) { }
+  constructor(private readonly productService: ProductService) {}
 
   @Post()
   create(@Body() createProductDto: CreateProductDto): Promise<Product> {
@@ -35,7 +35,10 @@ export class ProductController {
   }
 
   @Patch(':id')
-  update(@Param('id', ParseIntPipe) id: number, @Body() updateProductDto: UpdateProductDto): Promise<Product> {
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateProductDto: UpdateProductDto,
+  ): Promise<Product> {
     return this.productService.update(id, updateProductDto);
   }
 

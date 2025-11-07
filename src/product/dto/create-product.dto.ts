@@ -22,7 +22,6 @@ export class CreateProductDto {
   @IsString({ message: `Descrição do produto precisa ser uma string` })
   description?: string;
 
-
   @IsNumber(
     {
       allowInfinity: false,
@@ -45,7 +44,6 @@ export class CreateProductDto {
   @IsInt({ message: `O id da categoria deve ser um número inteiro` })
   @IsPositive({ message: `O id da categoria deve ser positivo` })
   categoryId: number;
-
 
   @IsUrl({}, { message: `Precisa ser uma URL válida` })
   imageUrl: string;

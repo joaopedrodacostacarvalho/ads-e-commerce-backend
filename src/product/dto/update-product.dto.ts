@@ -24,7 +24,6 @@ export class UpdateProductDto extends PartialType(CreateProductDto) {
   @IsString({ message: `Descrição do produto precisa ser uma string` })
   description?: string;
 
-
   @IsOptional()
   @IsNumber(
     {
@@ -47,7 +46,6 @@ export class UpdateProductDto extends PartialType(CreateProductDto) {
   @IsInt({ message: `O id da categoria deve ser um número inteiro` })
   @IsPositive({ message: `O id da categoria deve ser positivo` })
   categoryId?: number;
-
 
   @IsOptional()
   @IsUrl({}, { message: `Precisa ser uma URL válida` })
