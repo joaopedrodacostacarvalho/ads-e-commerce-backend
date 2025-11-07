@@ -6,7 +6,6 @@ import { ProductModule } from './product/product.module';
 import { ClientModule } from './client/client.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AddressModule } from './address/address.module';
-import { AddressModule } from './address/address.module';
 
 @Module({
   imports: [
