@@ -1,4 +1,10 @@
-import { IsEmail, IsNotEmpty, IsString, MaxLength, MinLength } from "class-validator";
+import {
+  IsEmail,
+  IsNotEmpty,
+  IsString,
+  MaxLength,
+  MinLength,
+} from 'class-validator';
 
 export class CreateClientDto {
   @IsNotEmpty({ message: 'O nome é obrigatório' })
@@ -17,7 +23,9 @@ export class CreateClientDto {
   password: string;
 
   @IsString({ message: 'O número de telefone deve ser uma string' })
-  @MaxLength(20, { message: 'O número de telefone pode ter no máximo 20 caracteres' })
+  @MaxLength(20, {
+    message: 'O número de telefone pode ter no máximo 20 caracteres',
+  })
   phone: string;
 
   registrationDate: Date;

@@ -1,6 +1,12 @@
-import { Exclude } from "class-transformer";
-import { Address } from "src/address/entities/address.entity";
-import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Exclude } from 'class-transformer';
+import { Address } from 'src/address/entities/address.entity';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity('client')
 export class Client {
