@@ -8,31 +8,26 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AddressModule } from './address/address.module';
 import { OrderModule } from './order/order.module';
 import { OrderItemModule } from './order-item/order-item.module';
-import { Address } from './address/entities/address.entity';
-import { Client } from './client/entities/client.entity';
-import { Product } from './product/entities/product.entity';
-import { Order } from './order/entities/order.entity';
-import { OrderItem } from './order-item/entities/order-item.entity';
-import { Category } from './category/entities/category.entity';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot({
-      type: 'mysql',
-      host: 'mysql_db',
-      port: 3307,
-      database: 'ads_e_commerce',
-      username: 'testuser',
-      password: 'testuser123',
-      entities: [
-        Address,
-        Category,
-        Client,
-        Order,
-        OrderItem,
-        Product,
-      ],
-      synchronize: true,
+    ConfigModule.forRoot({
+      isGlobal: true
+    }),
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => ({
+        type: 'mysql',
+        host: configService.get<string>('DB_HOST'),
+        port: configService.get<number>('DB_PORT'),
+        username: configService.get<string>('DB_USERNAME'),
+        password: configService.get<string>('DB_PASSWORD'),
+        database: configService.get<string>('DB_DATABASE'),
+        entities: [__dirname + '/**/*.entity{.ts,.js}'],
+        synchronize: true,
+      }),
+      inject: [ConfigService]
     }),
     ProductModule,
     CategoryModule,
