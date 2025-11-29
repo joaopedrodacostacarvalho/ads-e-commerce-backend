@@ -8,7 +8,7 @@ export class UpdateCategoryDto extends PartialType(CreateCategoryDto) {
   @MaxLength(100, { message: 'O nome pode ter no máximo 100 caracteres' })
   name?: string;
 
-  @IsOptional()
-  @IsBoolean({ message: 'O status ativo deve ser um booleano' })
-  isActive?: boolean;
+  // @IsOptional()
+  // @IsBoolean({ message: 'O status ativo deve ser um booleano' })
+  // isActive?: boolean;
 }

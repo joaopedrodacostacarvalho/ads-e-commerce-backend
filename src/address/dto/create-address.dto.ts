@@ -50,7 +50,7 @@ export class CreateAddressDto {
   @ApiPropertyOptional({ description: 'Definir como endereço padrão do cliente', default: false, type: Boolean }) 
   @IsOptional()
   @IsBoolean({ message: 'isDefault deve ser um booleano' })
-  isDefault: boolean;
+  isDefault: boolean; /* Para que serve ?? */
 
   @ApiProperty({ description: 'ID do Cliente proprietário deste endereço', example: 5, type: Number }) 
   @IsNotEmpty({ message: 'O clientId é obrigatório' })

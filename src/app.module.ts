@@ -15,15 +15,15 @@ import { Order } from './order/entities/order.entity';
 import { OrderItem } from './order-item/entities/order-item.entity';
 import { Category } from './category/entities/category.entity';
 
-@Module({
+@Module({    /*PUXAR DADOS DO .ENV*/
   imports: [
     TypeOrmModule.forRoot({
       type: 'mysql',
-      host: 'mysql_db',
-      port: 3307,
+      host: 'localhost',
+      port: 3306,
       database: 'ads_e_commerce',
-      username: 'testuser',
-      password: 'testuser123',
+      username: 'root',
+      password: '12345678',
       entities: [
         Address,
         Category,

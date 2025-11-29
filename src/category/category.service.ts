@@ -10,7 +10,7 @@ export class CategoryService {
   constructor(
     @InjectRepository(Category)
     private categoryRepository: Repository<Category>,
-  ) {}
+  ) { }
 
   async create(createCategoryDto: CreateCategoryDto): Promise<Category> {
     const newCategory = this.categoryRepository.create(createCategoryDto);
@@ -42,11 +42,13 @@ export class CategoryService {
     return this.categoryRepository.save(category);
   }
 
+  /* Agora funciona */
   async remove(id: number): Promise<void> {
     const category = await this.findOne(id);
 
-    category.isActive = false;
+    if (category){
+      await this.categoryRepository.delete(id);
+    }
 
-    await this.categoryRepository.save(category);
   }
 }

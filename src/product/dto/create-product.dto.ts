@@ -25,7 +25,9 @@ export class CreateProductDto {
   @IsString({ message: `Descrição do produto precisa ser uma string` })
   description?: string;
 
-  @ApiProperty({ description: 'Preço unitário (mínimo R$ 0,10, máximo 2 casas decimais)', example: 150.99, type: Number })11111
+
+  /* ALTERAR ISSO DAQUI: CHOR: CORREÇÃO NA DOCUMENTACAO SWAGGER PARA CRIACAO DE PRODUTO, RETIRADA DE INFORMACAO INDEVIDA:  111*/
+  @ApiProperty({ description: 'Preço unitário (mínimo R$ 0,10, máximo 2 casas decimais)' })
   @IsNumber(
     {
       allowInfinity: false,
