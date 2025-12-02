@@ -14,6 +14,7 @@ import { Product } from './product/entities/product.entity';
 import { Order } from './order/entities/order.entity';
 import { OrderItem } from './order-item/entities/order-item.entity';
 import { Category } from './category/entities/category.entity';
+import { AuthModule } from './auth/auth.module';
 
 @Module({    /*PUXAR DADOS DO .ENV*/
   imports: [
@@ -40,6 +41,7 @@ import { Category } from './category/entities/category.entity';
     AddressModule,
     OrderModule,
     OrderItemModule,
+    AuthModule
   ],
   controllers: [AppController],
   providers: [AppService],

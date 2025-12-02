@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Exclude } from 'class-transformer';
 import { Address } from 'src/address/entities/address.entity';
+import { UserRole } from 'src/auth/role/user.role';
 import {
   Column,
   CreateDateColumn,
@@ -35,6 +36,13 @@ export class User {
   @ApiProperty({ description: 'Data e hora do cadastro do cliente', example: '2025-07-11T19:00:00.000Z' })
   @CreateDateColumn({ type: 'timestamp' })
   registrationDate: Date;
+
+
+  @Column({
+  type: 'enum',
+  enum: UserRole,
+  })
+  role: UserRole;
 
   @ApiProperty({ description: 'Relação com Endereços', type: () => [Address] })
   @OneToMany(() => Address, (address) => address.user, {
