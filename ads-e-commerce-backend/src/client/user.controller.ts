@@ -7,12 +7,16 @@ import {
   Param,
   Delete,
   ParseIntPipe,
+  UseGuards,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateClientDto } from './dto/create-user.dto';
 import { UpdateClientDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
-import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBody } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBody, ApiBearerAuth } from '@nestjs/swagger';
+import { RolesGuard } from 'src/auth/role/role.guard';
+import { Roles } from 'src/auth/role/role.decorator';
+import { AuthGuard } from '@nestjs/passport';
 
 @ApiTags('User')
 @Controller('user')
@@ -28,6 +32,10 @@ export class UserController {
     return this.userService.create(createClientDto);
   }
 
+
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles('vendedor')
+  @ApiBearerAuth('JWT-auth')
   @Get()
   @ApiOperation({ summary: 'Lista todos os clientes' })
   @ApiResponse({ status: 200, description: 'Lista de clientes.', type: [User] })

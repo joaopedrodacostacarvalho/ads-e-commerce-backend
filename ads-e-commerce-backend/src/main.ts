@@ -18,6 +18,14 @@ async function bootstrap() {
     .setTitle('Ads E-commerce Backend')
     .setDescription('Um projeto da cadeira de web III')
     .setVersion('1.0')
+    .addBearerAuth(
+      {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+      },
+      'JWT-auth', 
+    )
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
