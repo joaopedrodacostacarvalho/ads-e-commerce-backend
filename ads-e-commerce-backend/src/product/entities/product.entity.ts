@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Category } from 'src/category/entities/category.entity';
+import { User } from 'src/client/entities/user.entity';
 import {
   Column,
   Entity,
@@ -48,4 +49,14 @@ export class Product {
   @ApiProperty({ description: 'URL da imagem principal', example: 'https://exemplo.com/img/notebook.jpg' })
   @Column({ type: 'varchar' })
   imageUrl: string;
+
+  
+  @Column()
+  sellerId: number; 
+
+   
+  @ManyToOne(() => User, user => user.products)
+  @JoinColumn({ name: 'sellerId' }) 
+  seller: User; 
+
 }

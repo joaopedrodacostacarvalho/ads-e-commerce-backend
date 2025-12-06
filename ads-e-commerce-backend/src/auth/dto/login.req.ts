@@ -1,14 +1,17 @@
-import { IsEmail, IsNotEmpty, MinLength } from "class-validator";
+import { ApiProperty } from "@nestjs/swagger";
+import { IsEmail, IsNotEmpty, IsString, MinLength } from "class-validator";
 
 export class LoginReq {
-  
+
+  @ApiProperty({ description: 'Preencha o email para login', example: 'carlos.alberto@exemplo.com', required: true })
+  @IsString({ message: 'O email  deve ser uma string' })
   @IsNotEmpty({ message: 'Email é obrigatório' })
-  // @ApiProperty({ example: 'usuario@example.com'})
   @IsEmail()
   email: string;
 
-  @MinLength(6, { message: 'A senha deve tem no mínimo 6 caracteres' })
-  // @ApiProperty({ example: 'senha com 6 caracters ou mais'})
-  @IsNotEmpty()
+
+  @ApiProperty({ description: 'Preencha a senha para login', example: 'sua senha 8 caracters', required: true })
+  @IsString({ message: 'A senha deve ser uma string' })
+  @IsNotEmpty({ message: 'Senha é obrigatório' })
   password: string;
 }

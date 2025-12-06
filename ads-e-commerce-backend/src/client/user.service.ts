@@ -3,13 +3,16 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { CreateClientDto } from './dto/create-user.dto';
+import { UserRequest } from './dto/user.request.dto';
 import { User } from './entities/user.entity';
 import { UpdateClientDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 import * as bcrypt from 'bcrypt';
+import { UserResponse } from './dto/user.response.dto';
+import { plainToInstance } from 'class-transformer';
+import { paginate, Paginated, PaginateQuery } from 'nestjs-paginate';
 
 @Injectable()
 export class UserService {
@@ -18,45 +21,57 @@ export class UserService {
     private clientRepository: Repository<User>,
   ) { }
 
-  async create(createClientDto: CreateClientDto): Promise<User> {
-    const existingClient = await this.clientRepository.findOne({
-      where: { email: createClientDto.email },
-    });
-
-    if (existingClient) {
-      throw new ConflictException(
-        `E-mail ${createClientDto.email} já cadastrado.`,
-      );
-    }
-
-    // Cria hash de senha
-    createClientDto.password = await bcrypt.hash(createClientDto.password, 10);
-
-    const newClient = this.clientRepository.create(createClientDto);
-    return this.clientRepository.save(newClient);
-  }
-
-  async findAll(): Promise<User[]> {
-    return this.clientRepository.find({
-      relations: ['addresses'],
-    });
-  }
-
-  async findOne(id: number): Promise<User> {
+  async findOne(id: number): Promise<UserResponse> {
     const client = await this.clientRepository.findOne({
       where: { id },
-      relations: ['addresses'],
+      relations: ['address'],
     });
 
     if (!client) {
       throw new NotFoundException(`Client com #${id} não encontrado`);
     }
 
-    return client;
+      const entityDto = plainToInstance(UserResponse, client, {
+        excludeExtraneousValues: true, // só retorna @Expose()
+     });
+
+    return entityDto;
   }
 
-  async update(id: number, updateClientDto: UpdateClientDto): Promise<User> {
-    const client = await this.findOne(id);
+
+  //Utiliei uma biblioteca para paginacao, ja permite filtros, teste:
+  //http://localhost:3000/user?sortBy=name:ASC&sortBy=createdAt:DESC
+  //http://localhost:3000/user?filter.role=vendedor
+ 
+  async findAll(query: PaginateQuery): Promise<Paginated<any>>{
+      const result = await paginate(query, this.clientRepository, {
+      sortableColumns: ['id', 'name', 'registrationDate'],
+      searchableColumns: ['name', 'email'],
+      defaultLimit: 10,
+      maxLimit: 50,
+      relations: ['addresses'],
+       filterableColumns: {
+      role: true,
+      }, 
+      
+    });
+
+    const entityDto = plainToInstance(UserResponse, result.data, {
+        excludeExtraneousValues: true, // só retorna @Expose()
+     });
+
+    return {
+      ...result,
+      data: entityDto,
+    };
+  }
+
+
+  
+
+  async update(id: number, updateClientDto: UpdateClientDto): Promise<UserResponse> {
+    const client = await this.clientRepository.findOne( { where: { id }});
+
 
     if (updateClientDto.password) {
       updateClientDto.password = await bcrypt.hash(
@@ -65,8 +80,17 @@ export class UserService {
       );
     }
 
-    Object.assign(client, updateClientDto);
-    return this.clientRepository.save(client);
+    if (client){
+      Object.assign(client, updateClientDto);
+      this.clientRepository.save(client);
+      
+    }
+
+    const entity = plainToInstance(UserResponse, client, {
+    excludeExtraneousValues: true, // só retorna @Expose()
+  });
+
+    return entity;
   }
 
   async remove(id: number): Promise<void> {
@@ -76,4 +100,6 @@ export class UserService {
       throw new NotFoundException(`Client com #${id} não encontrado`);
     }
   }
+
+
 }

@@ -2,10 +2,11 @@ import { Module } from '@nestjs/common';
 import { OrderService } from './order.service';
 import { OrderController } from './order.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UserModule } from 'src/client/user.module';
+// import { UserModule } from 'src/client/user.module';
 import { Order } from './entities/order.entity';
 import { OrderItemModule } from 'src/order-item/order-item.module';
 import { ProductModule } from 'src/product/product.module';
+import { UserModule } from 'src/client/user.module';
 
 @Module({
   imports: [

@@ -6,8 +6,9 @@ import {
   MaxLength,
   MinLength,
 } from 'class-validator';
+import { UserRole } from 'src/auth/role/user.role';
 
-export class CreateClientDto {
+export class UserRequest {
   @ApiProperty({ description: 'Nome completo do cliente', example: 'Carlos Alberto' })
   @IsNotEmpty({ message: 'O nome é obrigatório' })
   @IsString({ message: 'O nome deve ser uma string' })
@@ -33,5 +34,13 @@ export class CreateClientDto {
   })
   phone: string;
 
-  registrationDate: Date;
+  @ApiProperty({ description: 'Papel de acesso: consumidor ou vendedor', example: 'consumidor ou vendedor', required: true })
+  @IsString({ message: 'Role de acesso é uma string' })
+  @MaxLength(20, {
+    message: 'preencha a role do usuario: consumidor ou vendedor',
+  })
+  role: UserRole;
+
+
+  // registrationDate: Date;
 }

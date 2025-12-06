@@ -8,47 +8,39 @@ import {
   Delete,
   ParseIntPipe,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import { UserService } from './user.service';
-import { CreateClientDto } from './dto/create-user.dto';
 import { UpdateClientDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBody, ApiBearerAuth } from '@nestjs/swagger';
 import { RolesGuard } from 'src/auth/role/role.guard';
 import { Roles } from 'src/auth/role/role.decorator';
 import { AuthGuard } from '@nestjs/passport';
+import { UserResponse } from './dto/user.response.dto';
+import { Paginate, Paginated} from 'nestjs-paginate';
+import type { PaginateQuery } from 'nestjs-paginate';
 
 @ApiTags('User')
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) { }
 
-  @Post()
-  @ApiOperation({ summary: 'Cria um novo cliente (cadastro)' })
-  @ApiResponse({ status: 201, description: 'Cliente criado com sucesso.', type: User })
-  @ApiResponse({ status: 400, description: 'E-mail já cadastrado ou dados inválidos.' })
-  @ApiBody({ type: CreateClientDto })
-  async create(@Body() createClientDto: CreateClientDto): Promise<User> {
-    return this.userService.create(createClientDto);
-  }
-
-
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles('vendedor')
   @ApiBearerAuth('JWT-auth')
   @Get()
   @ApiOperation({ summary: 'Lista todos os clientes' })
   @ApiResponse({ status: 200, description: 'Lista de clientes.', type: [User] })
-  async findAll(): Promise<User[]> {
-    return this.userService.findAll();
+  async findAll(@Paginate() query: PaginateQuery): Promise<Paginated<UserResponse>>{
+    return this.userService.findAll(query);
   }
 
+  
   @Get(':id')
   @ApiOperation({ summary: 'Busca um cliente por ID' })
   @ApiResponse({ status: 200, description: 'Cliente encontrado.', type: User })
   @ApiResponse({ status: 404, description: 'Cliente não encontrado.' })
   @ApiParam({ name: 'id', description: 'ID do cliente', type: Number })
-  async findOne(@Param('id', ParseIntPipe) id: number): Promise<User> {
+  async findOne(@Param('id', ParseIntPipe) id: number): Promise<UserResponse> {
     return this.userService.findOne(id);
   }
 
@@ -61,7 +53,7 @@ export class UserController {
   async update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateClientDto: UpdateClientDto,
-  ): Promise<User> {
+  ): Promise<UserResponse> {
     return this.userService.update(id, updateClientDto);
   }
 
@@ -73,4 +65,10 @@ export class UserController {
   async remove(@Param('id', ParseIntPipe) id: number): Promise<void> {
     return this.userService.remove(id);
   }
+
+
+  //Desativar um usuário, implementar. 
+
+
+
 }

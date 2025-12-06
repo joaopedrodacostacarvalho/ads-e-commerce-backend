@@ -12,7 +12,7 @@ import {
   MinLength,
 } from 'class-validator';
 
-export class CreateProductDto {
+export class ProductRequest {
   @ApiProperty({ description: 'Nome do produto (mínimo 2, máximo 255 caracteres)', example: 'Mouse Sem Fio X' })
   @IsNotEmpty({ message: `Nome do produto necessário` })
   @IsString({ message: `Nome do produto precisa ser uma string` })
@@ -23,8 +23,7 @@ export class CreateProductDto {
   @ApiProperty({ description: 'Descrição detalhada do produto (Opcional)', example: 'Mouse ergonômico com sensor óptico', required: false })
   @IsOptional()
   @IsString({ message: `Descrição do produto precisa ser uma string` })
-  description?: string;
-
+  description: string;
 
   /* ALTERAR ISSO DAQUI: CHOR: CORREÇÃO NA DOCUMENTACAO SWAGGER PARA CRIACAO DE PRODUTO, RETIRADA DE INFORMACAO INDEVIDA:  111*/
   @ApiProperty({ description: 'Preço unitário (mínimo R$ 0,10, máximo 2 casas decimais)' })

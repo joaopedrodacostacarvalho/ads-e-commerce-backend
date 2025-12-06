@@ -21,7 +21,7 @@ export class AddressService {
     await this.addressRepository.update(
       {
         clientId,
-        isDefault: true,
+        // isDefault: true,
         // Excluirá os endereços que estamos atualmente configurando/criando
         ...(addressIdToExclude ? { id: Not(addressIdToExclude) } : {}),
       },

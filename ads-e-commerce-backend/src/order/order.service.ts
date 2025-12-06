@@ -23,12 +23,15 @@ export class OrderService {
     return status !== OrderStatus.PAID && status !== OrderStatus.CANCELLED;
   }
 
+
+  //pegar id do usuario logado(CORRIGIR, PEGAR ID DO USER DO TOKEN NO CONTROLLER)
   async create(createOrderDto: CreateOrderDto): Promise<Order> {
     await this.userService.findOne(createOrderDto.clientId); // Garante cliente existe
     const newOrder = this.orderRepository.create(createOrderDto);
     return this.orderRepository.save(newOrder);
   }
 
+  //paginacao (CORRIGIR, PEGAR ID DO USER DO TOKEN NO CONTROLLER)
   async findAll(id: number): Promise<Order[]> {
     return this.orderRepository.findBy({ clientId: id });
   }

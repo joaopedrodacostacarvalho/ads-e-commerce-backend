@@ -2,11 +2,13 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Exclude } from 'class-transformer';
 import { Address } from 'src/address/entities/address.entity';
 import { UserRole } from 'src/auth/role/user.role';
+import { Product } from 'src/product/entities/product.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
@@ -44,9 +46,14 @@ export class User {
   })
   role: UserRole;
 
-  @ApiProperty({ description: 'Relação com Endereços', type: () => [Address] })
-  @OneToMany(() => Address, (address) => address.user, {
-    cascade: true,
+  @ApiProperty({ description: 'Relação com Endereços', type: () => Address })
+    // MUDANÇA: Relacionamento One-to-One
+  @OneToOne(() => Address, (address) => address.user, {
+      cascade: true, // Garante que o endereço é salvo/deletado junto com o usuário
   })
-  addresses: Address[];
+  address: Address;
+
+
+  @OneToMany(() => Product, product => product.seller)
+    products: Product[]; // Este campo armazena a lista de produtos deste vendedor (opcional)
 }

@@ -6,6 +6,7 @@ import {
   Index,
   JoinColumn,
   ManyToOne,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
@@ -45,13 +46,14 @@ export class Address {
   isDefault: boolean;
 
   @ApiProperty({ description: 'ID do Cliente proprietário', example: 5, type: Number })
-  @Column({ type: 'int' })
+  @Column({ type: 'int', unique: true })
   clientId: number;
 
   @ApiProperty({ description: 'Objeto Cliente (relação)', type: () => User })
-  @ManyToOne(() => User, (user) => user.addresses, {
-    onDelete: 'CASCADE',
-  })
-  @JoinColumn({ name: 'clientId' })
-  user: User;
+    // 💡 MUDANÇA: Relacionamento One-to-One
+    @OneToOne(() => User, (user) => user.address, { 
+      onDelete: 'CASCADE',
+    })
+    @JoinColumn({ name: 'clientId' }) // 💡 Mantém o JoinColumn para definir clientId como a FK
+    user: User;
 }

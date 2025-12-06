@@ -6,6 +6,11 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Between, Like, Repository } from 'typeorm';
 import { CategoryService } from 'src/category/category.service';
 import { ProductFilterDto } from './dto/product-filter.dto';
+import { UserService } from 'src/client/user.service';
+import { ProductRequest } from './dto/product.request';
+import { ProductResponse } from './dto/product.response';
+import { plainToInstance } from 'class-transformer';
+import { paginate, Paginated, PaginateQuery } from 'nestjs-paginate';
 
 @Injectable()
 export class ProductService {
@@ -13,38 +18,67 @@ export class ProductService {
     @InjectRepository(Product)
     private productRepository: Repository<Product>,
     private categoryService: CategoryService,
+    private userService: UserService  
   ) {}
 
-  async create(createProductDto: CreateProductDto): Promise<Product> {
-    await this.categoryService.findOne(createProductDto.categoryId);
+  //sellerId: Id do usuario logado, extraimos do token.
+  async create(productRequestDto: ProductRequest, sellerId: number): Promise<ProductResponse> {
+  
+    const category = await this.categoryService.findOne(productRequestDto.categoryId)
+    const userVendedor = await this.userService.findOne(sellerId)
 
-    const newProduct = this.productRepository.create(createProductDto);
-    return this.productRepository.save(newProduct);
+    const newProduct = this.productRepository.create(productRequestDto);
+    newProduct.sellerId = userVendedor.id;
+    await this.productRepository.save(newProduct);
+
+    //Serve para fazer um mapper da entidade para dto de saída
+    const entityResponseDto = plainToInstance(ProductResponse, newProduct, {
+            excludeExtraneousValues: true, // só retorna @Expose()
+    });
+
+    entityResponseDto.category = category.name;
+    entityResponseDto.seller = userVendedor.name;
+
+
+    return entityResponseDto
   }
 
-  async findAll(filterDto: ProductFilterDto): Promise<Product[]> {
-    const { name, categoryId, minPrice, maxPrice } = filterDto;
+  //adicionar metodo para trazer todos os produtos do usuario logado (filtro ativo e inativo)
 
-    const where: any = {};
+  async findAll(
+  query: PaginateQuery,
+  filters: ProductFilterDto,
+): Promise<Paginated<Product>> {
+  
+  const where: any = {
+    isActive: true, //Sempre oculta produtos inativos
+  };
 
-    if (name) {
-      where.name = Like(`%${name}%`);
-    }
-
-    if (categoryId) {
-      where.categoryId = categoryId;
-    }
-
-    if (minPrice && maxPrice) {
-      where.price = Between(minPrice, maxPrice);
-    } else if (minPrice) {
-      where.price = Between(minPrice, Number.MAX_SAFE_INTEGER);
-    } else if (maxPrice) {
-      where.price = Between(0, maxPrice);
-    }
-
-    return this.productRepository.find({ where, order: { name: 'ASC' } });
+  //Filtro por nome
+  if (filters.name) {
+    where.name = Like(`%${filters.name}%`);
   }
+
+  //Filtro por categoria
+  if (filters.categoryId) {
+    where.categoryId = filters.categoryId;
+  }
+
+  // Filtro por faixa de preço
+  if (filters.minPrice || filters.maxPrice) {
+    where.price = Between(
+      filters.minPrice ?? 0,
+      filters.maxPrice ?? Number.MAX_SAFE_INTEGER,
+    );
+  }
+
+  return paginate(query, this.productRepository, {
+    sortableColumns: ['name', 'price', 'id'],
+    defaultSortBy: [['name', 'ASC']],
+    where,
+    maxLimit: 100,
+  });
+}
 
   async findOne(id: number): Promise<Product> {
     const product = await this.productRepository.findOne({ where: { id } });
@@ -70,7 +104,7 @@ export class ProductService {
     return this.productRepository.save(product);
   }
 
-  async remove(id: number): Promise<void> {
+  async inative(id: number): Promise<void> {
     const product = await this.findOne(id);
 
     product.isActive = false;
@@ -78,6 +112,13 @@ export class ProductService {
     await this.productRepository.save(product);
   }
 
+  async remove(id: number): Promise<void> {
+    const product = await this.findOne(id);
+    await this.productRepository.delete(product);
+  }
+
+
+  //VERIFICAR DEBITAR E CREDITAR  
   async debitStock(productId: number, quantity: number): Promise<void> {
     const product = await this.productRepository.findOne({
       where: { id: productId },
