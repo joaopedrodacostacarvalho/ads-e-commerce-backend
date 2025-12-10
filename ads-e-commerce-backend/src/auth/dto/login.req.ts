@@ -3,14 +3,14 @@ import { IsEmail, IsNotEmpty, IsString, MinLength } from "class-validator";
 
 export class LoginReq {
 
-  @ApiProperty({ description: 'Preencha o email para login', example: 'carlos.alberto@exemplo.com', required: true })
+  @ApiProperty({ description: 'Preencha o email para login', example: 'user.user@exemplo.com', required: true })
   @IsString({ message: 'O email  deve ser uma string' })
   @IsNotEmpty({ message: 'Email é obrigatório' })
   @IsEmail()
   email: string;
 
 
-  @ApiProperty({ description: 'Preencha a senha para login', example: 'sua senha 8 caracters', required: true })
+  @ApiProperty({ description: 'Preencha a senha para login', example: '12345678', required: true })
   @IsString({ message: 'A senha deve ser uma string' })
   @IsNotEmpty({ message: 'Senha é obrigatório' })
   password: string;

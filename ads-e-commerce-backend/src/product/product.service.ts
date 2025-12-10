@@ -12,6 +12,7 @@ import { ProductResponse } from './dto/product.response';
 import { plainToInstance } from 'class-transformer';
 import { paginate, Paginated, PaginateQuery } from 'nestjs-paginate';
 
+
 @Injectable()
 export class ProductService {
   constructor(
@@ -43,7 +44,7 @@ export class ProductService {
     return entityResponseDto
   }
 
-  //adicionar metodo para trazer todos os produtos do usuario logado (filtro ativo e inativo)
+  
 
   async findAll(
   query: PaginateQuery,
@@ -79,6 +80,47 @@ export class ProductService {
     maxLimit: 100,
   });
 }
+
+//MY PRODUCTS 
+async findMyProducts(
+  query: PaginateQuery,
+  filters: ProductFilterDto,
+  sellerId: number
+): Promise<Paginated<Product>> {
+  
+  const where: any = {
+    sellerId: sellerId 
+  };
+
+  //Filtro por nome
+  if (filters.name) {
+    where.name = Like(`%${filters.name}%`);
+  }
+
+  //Filtro por categoria
+  if (filters.categoryId) {
+    where.categoryId = filters.categoryId;
+  }
+
+  // Filtro por faixa de preço
+  if (filters.minPrice || filters.maxPrice) {
+    where.price = Between(
+      filters.minPrice ?? 0,
+      filters.maxPrice ?? Number.MAX_SAFE_INTEGER,
+    );
+  }
+
+  return paginate(query, this.productRepository, {
+    sortableColumns: ['name', 'price', 'id'],
+    defaultSortBy: [['name', 'ASC']],
+    where,
+    maxLimit: 100,
+  });
+}
+
+
+
+//MY PRODUCTS 
 
   async findOne(id: number): Promise<Product> {
     const product = await this.productRepository.findOne({ where: { id } });
@@ -117,6 +159,7 @@ export class ProductService {
     await this.productRepository.delete(product);
   }
 
+  
 
   //VERIFICAR DEBITAR E CREDITAR  
   async debitStock(productId: number, quantity: number): Promise<void> {

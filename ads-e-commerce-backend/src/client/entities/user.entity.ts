@@ -2,6 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Exclude } from 'class-transformer';
 import { Address } from 'src/address/entities/address.entity';
 import { UserRole } from 'src/auth/role/user.role';
+import { Cart } from 'src/cart/entity/cart.entity';
 import { Product } from 'src/product/entities/product.entity';
 import {
   Column,
@@ -11,7 +12,7 @@ import {
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-
+ 
 @Entity('user')
 export class User {
   @ApiProperty({ description: 'ID único do usuário', example: 5 })
@@ -45,6 +46,12 @@ export class User {
   enum: UserRole,
   })
   role: UserRole;
+
+  @ApiProperty({ description: 'Relação com CARRINHO', type: () => Address })
+  @OneToOne(() => Cart, (cart) => cart.user, {
+    cascade: true, // Opcional: deleta/salva o carrinho junto com o usuário
+  })
+  cart: Cart;
 
   @ApiProperty({ description: 'Relação com Endereços', type: () => Address })
     // MUDANÇA: Relacionamento One-to-One

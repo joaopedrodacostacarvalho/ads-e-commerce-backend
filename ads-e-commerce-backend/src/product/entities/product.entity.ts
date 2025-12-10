@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Cart_item } from 'src/cart-item/entity/cartItem.entity';
 import { Category } from 'src/category/entities/category.entity';
 import { User } from 'src/client/entities/user.entity';
 import {
@@ -6,6 +7,7 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
@@ -30,6 +32,10 @@ export class Product {
   @ApiProperty({ description: 'Estoque disponível', example: 15, type: Number })
   @Column({ type: 'int', default: 0 })
   stock: number;
+
+  @ApiProperty({description: 'Estoque reservado para pedidos ainda não pagos', example: 15, type: Number})
+  @Column({ type: 'int', default: 0 })
+  reservedStock:number;
 
   @ManyToOne(() => Category, (category) => category.products, {
     eager: true,
@@ -58,5 +64,10 @@ export class Product {
   @ManyToOne(() => User, user => user.products)
   @JoinColumn({ name: 'sellerId' }) 
   seller: User; 
+
+
+  @OneToMany(() => Cart_item, cartItem => cartItem.product)
+  cartItems: Cart_item[];
+
 
 }

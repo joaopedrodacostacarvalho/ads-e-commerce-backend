@@ -13,7 +13,7 @@ import { User } from 'src/client/entities/user.entity';
 import { OrderItem } from 'src/order-item/entities/order-item.entity';
 import { ApiProperty } from '@nestjs/swagger';
 
-@Entity('order')
+@Entity('orders')
 export class Order {
   @ApiProperty({ description: 'ID único do pedido', example: 101 }) // NOVO
   @PrimaryGeneratedColumn()
@@ -45,9 +45,12 @@ export class Order {
 
   // RELACIONAMENTOS: Cliente
 
-  @ApiProperty({ description: 'ID do Cliente proprietário deste pedido', example: 5, type: Number })
+  // @ApiProperty({ description: 'ID do Cliente proprietário deste pedido', example: 5, type: Number })
+  // @Column({ type: 'int' })
+  // clientId: number; // Chave estrangeira
+
   @Column({ type: 'int' })
-  clientId: number; // Chave estrangeira
+  userId: number; // Chave estrangeira
 
   @ApiProperty({ description: 'Objeto Cliente (relação)', type: () => User })
   @ManyToOne(() => User, { onDelete: 'CASCADE' })

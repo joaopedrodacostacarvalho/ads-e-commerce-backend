@@ -25,6 +25,7 @@ import { Roles } from 'src/auth/role/role.decorator';
 import { Paginate } from 'nestjs-paginate';
 import type { Paginated, PaginateQuery } from 'nestjs-paginate';
 
+
 @ApiTags('Produtos')
 @Controller('product')
 export class ProductController {
@@ -39,7 +40,7 @@ export class ProductController {
   @ApiResponse({ status: 201, description: 'Produto criado com sucesso.', type: Product })
   @ApiResponse({ status: 400, description: 'Dados de entrada inválidos.' })
   @ApiBody({ type: CreateProductDto, description: 'Dados completos para o novo produto.' })
-  create(
+ async create(
     @Body() productRequest: ProductRequest,
     @GetSellerId() sellerId: number   //CRIEI PARA PEGARMOS ID DO TOKEN
 
@@ -60,16 +61,34 @@ export class ProductController {
   ): Promise<Paginated<Product>> {
     return this.productService.findAll(query, filters);
   }
+
+  @ApiBearerAuth('JWT-auth')
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles('vendedor')
+  @Get("/myproducts")
+  @ApiQuery({ name: 'name', required: false })
+  @ApiQuery({ name: 'categoryId', required: false })
+  @ApiQuery({ name: 'minPrice', required: false })
+  @ApiQuery({ name: 'maxPrice', required: false })
+  @ApiOperation({ summary: 'Buscar meus produtos' })
+  async findMyProducts(
+    @Paginate() query: PaginateQuery,
+    @Query() filters: ProductFilterDto,
+    @GetSellerId() sellerId: number
+  ): Promise<Paginated<Product>> {
+    return this.productService.findMyProducts(query, filters, sellerId);
+  }
   
   
   @Get(':id')
   @ApiOperation({ summary: 'Lista produto com id' })
   @ApiResponse({ status: 200, description: 'Produto retornado com sucesso.', type: Product })
   @ApiParam({ name: 'id', description: 'ID do produto', type: Number })
-  findOne(@Param('id', ParseIntPipe) id: number): Promise<Product> {
+  async findOne(@Param('id', ParseIntPipe) id: number): Promise<Product> {
     return this.productService.findOne(id);
   }
 
+  
 
   @Patch(':id')
   @Roles('vendedor')
@@ -79,7 +98,7 @@ export class ProductController {
   @ApiResponse({ status: 404, description: 'Produto ou Categoria não encontrado.' })
   @ApiBody({ type: UpdateProductDto, description: 'Dados a serem atualizados (parciais).' })
   @ApiParam({ name: 'id', description: 'ID do produto a ser atualizado', type: Number })
-  update(
+  async update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateProductDto: UpdateProductDto,
   ): Promise<Product> {
@@ -95,7 +114,7 @@ export class ProductController {
   @ApiResponse({ status: 200, description: 'Produto removido (isActive = false).', type: Product }) // A Entity retorna o produto com isActive=false
   @ApiResponse({ status: 404, description: 'Produto ou Categoria não encontrado.' })
   @ApiParam({ name: 'id', description: 'ID do produto a ser removido', type: Number })
-  inative(@Param('id', ParseIntPipe) id: number): Promise<void> {
+  async inative(@Param('id', ParseIntPipe) id: number): Promise<void> {
     return this.productService.inative(id);
   }
 
@@ -107,7 +126,7 @@ export class ProductController {
   @ApiResponse({ status: 200, description: 'Produto removido (isActive = false).', type: Product }) // A Entity retorna o produto com isActive=false
   @ApiResponse({ status: 404, description: 'Produto ou Categoria não encontrado.' })
   @ApiParam({ name: 'id', description: 'ID do produto a ser removido', type: Number })
-  remove(@Param('id', ParseIntPipe) id: number): Promise<void> {
+  async remove(@Param('id', ParseIntPipe) id: number): Promise<void> {
     return this.productService.remove(id);
   }
 
