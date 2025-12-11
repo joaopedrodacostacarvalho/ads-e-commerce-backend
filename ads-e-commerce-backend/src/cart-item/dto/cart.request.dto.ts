@@ -4,7 +4,7 @@ import { IsNumber } from "class-validator";
 
 export class cartItemReq{
 
- @ApiProperty({ description: 'id do produto', example: 'id:2' })
+ @ApiProperty({ description: 'id do produto', example: 'id2(deve ser number)' })
  @IsNumber()
  productId: number;
  

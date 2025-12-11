@@ -29,6 +29,137 @@ export class OrderService {
     @InjectRepository(Cart_item) private cartItemRepo: Repository<Cart_item>,
   ) { }
 
+  async create(userId: number) {
+
+  // Criamos um queryRunner porque vamos executar várias operações como uma única transação
+  const queryRunner = this.dataSource.createQueryRunner();
+  await queryRunner.connect();
+  await queryRunner.startTransaction();
+
+  try {
+    // ====================================================
+    // 1. Buscar carrinho do usuário com itens + produtos
+    // ====================================================
+    const cart = await queryRunner.manager.findOne(Cart, {
+      where: { userId },
+      relations: ['items', 'items.product'], // carrega os produtos dentro dos itens
+    });
+
+    // Validações básicas
+    if (!cart) throw new NotFoundException('Carrinho não encontrado');
+    if (!cart.items || cart.items.length === 0)
+      throw new BadRequestException('Carrinho está vazio');
+
+
+
+    // ====================================================
+    // 2. Criar a Order com status AGUARDANDO_PAGAMENTO
+    // ====================================================
+    const order = queryRunner.manager.create(Order, {
+      userId,
+      client: { id: userId },  // ManyToOne para User
+      status: OrderStatus.WAITING_PAYMENT, // ← importante!
+      subtotal: 0,
+      total: 0,
+      totalQuantity: 0,
+      createdAt: new Date(), // para o cron saber quando expira
+    });
+
+    // Salva o pedido no banco
+    const savedOrder = await queryRunner.manager.save(order);
+
+
+
+    // ====================================================
+    // 3. Criar OrderItems e reservar estoque
+    // ====================================================
+    let total = 0;
+
+    for (const cartItem of cart.items) {
+      const product = cartItem.product;
+
+      // Verifica se o estoque disponível suporta o pedido
+      if (product.stock - product.reservedStock < cartItem.quantity) {
+        throw new BadRequestException(
+          `Estoque insuficiente para o produto: ${product.name}`,
+        );
+      }
+
+      // Calcula subtotal do item
+      const itemTotal = cartItem.quantity * cartItem.unitPrice;
+      total += itemTotal;
+
+      // Cria o item do pedido
+      const orderItem = queryRunner.manager.create(OrderItem, {
+        order: savedOrder,
+        productId: product.id,
+        quantity: cartItem.quantity,
+        unitPrice: cartItem.unitPrice,
+        subtotal: itemTotal,
+      });
+
+      await queryRunner.manager.save(orderItem);
+
+      // ====================================================
+      // 3.1 Congelar estoque (reservar)
+      // ====================================================
+      product.reservedStock += cartItem.quantity; // adiciona à reserva
+      await queryRunner.manager.save(product);
+    }
+
+
+
+    // ====================================================
+    // 4. Atualizar order com valores finais
+    // ====================================================
+    savedOrder.subtotal = total;
+    savedOrder.total = total; // frete/descontos podem ser adicionados depois
+    savedOrder.totalQuantity = cart.items.length;
+
+    await queryRunner.manager.save(savedOrder);
+
+
+
+    // ====================================================
+    // 5. Esvaziar o carrinho
+    // ====================================================
+    await queryRunner.manager.remove(Cart_item, cart.items);
+
+    cart.items = [];
+    await queryRunner.manager.save(cart);
+
+
+
+    // ====================================================
+    // 6. Commit da transação
+    // ====================================================
+    await queryRunner.commitTransaction();
+
+
+    // ====================================================
+    // 7. Retorno final
+    // ====================================================
+    return {
+      message: 'Pedido criado com sucesso!',
+      orderId: savedOrder.id,
+      total: savedOrder.total,
+      items: savedOrder.totalQuantity,
+      status: savedOrder.status, // AGUARDANDO_PAGAMENTO
+    };
+
+  } catch (error) {
+
+    // Se algo falhar, desfaz tudo
+    await queryRunner.rollbackTransaction();
+    throw error;
+
+  } finally {
+
+    // Libera conexão
+    await queryRunner.release();
+  }
+}
+
 
 //   async createOrder(userId: number) {
 //   const queryRunner = this.dataSource.createQueryRunner();
@@ -190,6 +321,8 @@ async createOrder(userId: number) {
 
     cart.items = [];
     await queryRunner.manager.save(cart);
+    
+    
 
     // ====================================================
     // 6. Commit
@@ -210,106 +343,6 @@ async createOrder(userId: number) {
   }
 }
 
-//   async createOrder(userId: number) {
-//   // Criamos um QueryRunner: permite executar tudo em TRANSAÇÃO
-//   // Se algo der errado, damos rollback.
-//   const queryRunner = this.dataSource.createQueryRunner();
-
-//   // Abrimos conexão
-//   await queryRunner.connect();
-
-//   // Iniciamos transação
-//   await queryRunner.startTransaction();
-
-//   try {
-//     // ====================================================
-//     // 1. Buscar o carrinho completo do usuário
-//     // ====================================================
-//     const cart = await queryRunner.manager.findOne(Cart, {
-//       where: { userId },
-//       relations: ['items', 'items.product'], // pega itens + produtos
-//     });
-
-//     if (!cart) {
-//       throw new NotFoundException('Carrinho não encontrado');
-//     }
-
-//     if (cart.items.length === 0) {
-//       throw new BadRequestException('Carrinho está vazio');
-//     }
-
-//     // ====================================================
-//     // 2. Criar a Order (pedido)
-//     // ====================================================
-//     const order = queryRunner.manager.create(Order, { 
-//      client: { id: userId },  // ou user: { id: userId } dependendo da sua entidade
-//      status: OrderStatus.OPEN, // status inicial
-//      subtotal: 0,
-//      total: 0,
-//      totalQuantity: 0,
-//     });
-
-//     // salvar a order
-//     const savedOrder = await queryRunner.manager.save(order);
-
-//     // ====================================================
-//     // 3. Criar os OrderItems com base nos itens do carrinho
-//     // ====================================================
-//     let total = 0;
-
-//     for (const cartItem of cart.items) {
-//       const itemTotal = cartItem.quantity * cartItem.product.price;
-//       total += itemTotal;
-
-//       // Criamos cada item do pedido
-//       const orderItem = queryRunner.manager.create(OrderItem, {
-//         order: savedOrder,                // relacionamento
-//         productId: cartItem.product.id,
-//         quantity: cartItem.quantity,
-//         price: cartItem.product.price,
-//         subtotal: itemTotal,
-//       });
-
-//       // salvamos item
-//       await queryRunner.manager.save(orderItem);
-//     }
-
-//     // ====================================================
-//     // 4. Atualizar total da Order
-//     // ====================================================
-//     savedOrder.total = total;
-//     await queryRunner.manager.save(savedOrder);
-
-//     // ====================================================
-//     // 5. Limpar o carrinho
-//     // ====================================================
-
-//     // remover os itens do carrinho
-//     await queryRunner.manager.remove(Cart_item, cart.items);
-
-//     // garantir carrinho vazio
-//     cart.items = [];
-//     await queryRunner.manager.save(cart);
-
-//     // ====================================================
-//     // 6. Finalizar transação com sucesso
-//     // ====================================================
-//     await queryRunner.commitTransaction();
-
-//     return {
-//       message: 'Pedido criado com sucesso',
-//       orderId: savedOrder.id,
-//       total: total,
-//     };
-//   } catch (error) {
-//     // Se der qualquer erro, desfaz tudo
-//     await queryRunner.rollbackTransaction();
-//     throw error;
-//   } finally {
-//     // Encerra o queryRunner SEMPRE
-//     await queryRunner.release();
-//   }
-// }
 
   
   
@@ -321,13 +354,6 @@ async createOrder(userId: number) {
     return status !== OrderStatus.PAID && status !== OrderStatus.CANCELLED;
   }
 
-
-  // //pegar id do usuario logado(CORRIGIR, PEGAR ID DO USER DO TOKEN NO CONTROLLER)
-  // async create(createOrderDto: CreateOrderDto): Promise<Order> {
-  //   await this.userService.findOne(createOrderDto.clientId); // Garante cliente existe
-  //   const newOrder = this.orderRepository.create(createOrderDto);
-  //   return this.orderRepository.save(newOrder);
-  // }
 
   // //paginacao (CORRIGIR, PEGAR ID DO USER DO TOKEN NO CONTROLLER)
   // async findAll(id: number): Promise<Order[]> {

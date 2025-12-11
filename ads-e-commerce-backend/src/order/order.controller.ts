@@ -27,50 +27,42 @@ import { Product } from 'src/product/entities/product.entity';
 export class OrderController {
   constructor(private readonly orderService: OrderService) { }
 
-  //pegar id do token, facilita frontend.
+  //NÃO USAREMOS ESSE, MAS 
+  // @UseGuards(AuthGuard('jwt'))
+  // @ApiBearerAuth('JWT-auth')  //OK
+  // @UseGuards(AuthGuard('jwt'), RolesGuard)
+  // @Roles('consumidor')
   // @Post()
-  // @HttpCode(HttpStatus.CREATED)
-  // @ApiOperation({ summary: 'Cria um novo pedido (Status: ABERTO)' }) 
-  // @ApiResponse({ 
-  //   status: 201, 
-  //   description: 'Pedido criado com sucesso (status ABERTO).', 
-  //   type: Order 
-  // }) 
-  // @ApiResponse({ status: 404, description: 'Cliente não encontrado.' })
-  // @ApiBody({ type: CreateOrderDto }) 
-  // create(@Body() createOrderDto: CreateOrderDto): Promise<Order> {
-  //   return this.orderService.create(createOrderDto);
+  // @ApiOperation({ summary: 'Antigo Criar um pedido (order)' })
+  // async createOrder(
+  //   @Body() Product:CreateOrderDt
+  // ) {
+  //   return this.orderService.createOrder(Product.userId);
   // }
 
-  // @Get('/order/:id')
-  // @ApiOperation({ summary: 'Busca todos os pedidos de um cliente' }) 
-  // @ApiResponse({ 
-  //   status: 200, 
-  //   description: 'Lista de pedidos do cliente.', 
-  //   type: [Order] 
-  // }) 
-  // @ApiParam({ 
-  //   name: 'id', 
-  //   description: 'ID do Cliente', 
-  //   type: Number 
-  // }) 
-  // findAll(@Param('id', ParseIntPipe) id: number): Promise<Order[]> {
-  //   return this.orderService.findAll(id); precisa do clientId
-  // }
+  //ESSE MÉTODO SERVE PARA CRIAR UM PEDIDO. AO CRIAR, ELE LIMPA O CARRINHO 
+  //E O ORDEM PASSA A TER O STATUS:WAITING_PAYMENT = `AGUARDANDO_PAGAMENTO`
+  //BASTA PASSAR O ID DO CLIENTE, QUE SERÁ CRIADO COM BASE NOS PRODUTOS DO CARRINHO
+  //DO USUARIO LOGADO
+  //(MYCARTS)
 
-  //Por algum motivo macabro, se tentar extrair id do token , da erro .
-  //Deixar pegando id do dto.
+  //USE O JOSE PARA EXTRAIR ID DO TOKEN E MANDE A REQUISIÇÃO PASSANDO O ID NO BODY
+  //POR ALGUM MOTIVO MACABRO SÓ FUNCIONA ASSIM. 
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('JWT-auth')  //OK
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles('consumidor')
-  @Post()
-  @ApiOperation({ summary: 'Criar um pedido (order)' })
-  async createOrder(
-    @Body() Product:CreateOrderDt
+  @Post('/create')
+  @ApiOperation({ summary: 'Novo Criar um pedido (order)' })
+  async publicar(
+    @Body() Produto:CreateOrderDt
   ) {
-    return this.orderService.createOrder(Product.userId);
+    return this.orderService.create(Produto.userId);
   }
+
+
+
+
 
   @Get(':id')
   @ApiOperation({ summary: 'Busca um pedido por ID' }) 

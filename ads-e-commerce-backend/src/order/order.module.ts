@@ -11,6 +11,7 @@ import { OrderItem } from 'src/order-item/entities/order-item.entity';
 import { CartModule } from 'src/cart/cart.module';
 import { Cart } from 'src/cart/entity/cart.entity';
 import { Cart_item } from 'src/cart-item/entity/cartItem.entity';
+import { OrderExpirationService } from 'src/job/job.service';
 
 @Module({
   imports: [
@@ -21,7 +22,7 @@ import { Cart_item } from 'src/cart-item/entity/cartItem.entity';
     CartModule
   ],
   controllers: [OrderController],
-  providers: [OrderService],
+  providers: [OrderService,OrderExpirationService],
   exports: [OrderService],
 })
 export class OrderModule { }

@@ -71,6 +71,11 @@ export class Order {
   @CreateDateColumn({ type: 'timestamp' })
   createdAt: Date;
 
+  //adicionado
+  @Column({ type: 'varchar', nullable: true })
+  cancelReason?: string;
+
+
   @ApiProperty({ description: 'Data da última atualização do pedido', example: '2025-11-07T09:05:00.000Z' })
   // Data e hora da última atualização
   @UpdateDateColumn({ type: 'timestamp' })

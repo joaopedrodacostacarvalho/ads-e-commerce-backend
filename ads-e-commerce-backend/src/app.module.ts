@@ -19,8 +19,9 @@ import { Cart } from './cart/entity/cart.entity';
 import { CartModule } from './cart/cart.module';
 import { CartItemModule } from './cart-item/cartItem.module';
 import { Cart_item } from './cart-item/entity/cartItem.entity';
-import { Payament } from './payament/entity/payament.entity';
+// import { Payament } from './payament/entity/payament.entity';
 import { PayamentModule } from './payament/payament.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({    /*PUXAR DADOS DO .ENV*/
   imports: [
@@ -40,7 +41,7 @@ import { PayamentModule } from './payament/payament.module';
         Product,
         Cart,
         Cart_item,
-        Payament
+        // Payament
       ],
       synchronize: true,
     }),
@@ -53,7 +54,8 @@ import { PayamentModule } from './payament/payament.module';
     AuthModule,
     CartModule,
     CartItemModule,
-    PayamentModule
+    PayamentModule,
+    ScheduleModule.forRoot(), 
   ],
   controllers: [AppController],
   providers: [AppService],
