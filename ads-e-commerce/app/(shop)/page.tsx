@@ -1,29 +1,44 @@
-import { findAllProducts } from '@/services/product.service';
-import { Product } from '@/services/types';
+import { findAllProducts } from "@/services/product.service";
+import { Product } from "@/services/types";
+import Produto from "@/components/Produto";
 
-export default async function HomePage() {
-  let products: Product[] = [];
+// A função assíncrona da página agora usa o serviço que, por sua vez, usa Axios.
+async function getProdutos() {
   try {
-    // Busca os 4 primeiros produtos para destaque
-    products = await findAllProducts();
+    // ESTA LINHA CHAMA A FUNÇÃO DE SERVIÇO QUE UTILIZA AXIOS INTERNAMENTE.
+    const produtos = await findAllProducts({});
+    return produtos;
   } catch (error) {
-    console.error("Erro ao carregar produtos de destaque:", error);
+    console.error("Erro ao buscar produtos:", error);
+    throw new Error("Falhou a busca de produtos na API.");
+  }
+}
+
+export default async function Home() {
+  let produtos: Product[] = [];
+  try {
+    produtos = await getProdutos();
+  } catch (error) {
+    return (
+      <div className="max-w-7xl mx-auto pt-8 px-8 xl:px-0">
+        <h1>Falha ao Carregar Produtos</h1>
+        <p>
+          Ocorreu um erro ao conectar-se à API ou buscar os dados. Tente
+          verificar se o backend NestJS está rodando e se a baseURL em
+          `src/services/api.ts` está correta.
+        </p>
+      </div>
+    );
   }
 
   return (
-    <div>
-      <h2>✨ Produtos em Destaque</h2>
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '20px' }}>
-        {products.slice(0, 4).map((p) => (
-          <div key={p.id} style={{ border: '1px solid #ccc', padding: '10px', width: '200px' }}>
-            <img src={p.imageUrl} alt={p.name} style={{ width: '100%', height: 'auto' }} />
-            <h4>{p.name}</h4>
-            <p>R$ {p.price.toFixed(2)}</p>
-            <a href={`/products/${p.id}`}>Ver Detalhes</a>
-          </div>
+    <div className="max-w-7xl mx-auto pt-8 px-8 xl:px-0">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-10 xl:gap-6">
+        {produtos.map((prod: Product) => (
+          <Produto key={prod.id} produto={prod} />
         ))}
       </div>
-      <p><a href="/products">Ver todos os produtos...</a></p>
+      <h1>Hello World</h1>
     </div>
   );
 }
