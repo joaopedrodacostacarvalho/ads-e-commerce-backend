@@ -1,5 +1,6 @@
 import Produto from "@/components/Produto";
-import { ProdutoType } from "./types/Produto.type";
+import { Product } from "@/services/types";
+
 
 // import Image from "next/image";
 async function getProdutos() {
@@ -17,9 +18,9 @@ export default async function Home() {
   console.log(produtos);
 
   return (
-    <div className="max-width-7xl mx-auto pt-8 px-8 xl:px-0">
+    <div className="max-w-7xl mx-auto pt-8 px-8 xl:px-0">
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-10 xl:gap-6">
-        {produtos.map((prod: ProdutoType) => (
+        {produtos.map((prod: Product) => (
           <Produto key={prod.id} produto={prod}></Produto>
         ))}
       </div>

@@ -18,15 +18,15 @@ export default function Navbar() {
       <div className="navbar-center">
         <ul className="nav-links">
           <li>
-            <a href="/produtos">Produtos</a>
+            <a href="/products">Produtos</a>
           </li>
           <li>
-            <a href="/categorias">Categorias</a>
+            <a href="/categories">Categorias</a>
           </li>
         </ul>
       </div>
       <div className="navbar-right">
-        <a href="/carrinho" className="cart-icon">
+        <a href="/cart" className="cart-icon">
           <span className="cart-count">0</span>
           <FontAwesomeIcon icon={faShoppingCart} size="2x" color="white" />
         </a>

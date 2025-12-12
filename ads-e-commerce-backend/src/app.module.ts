@@ -19,7 +19,7 @@ import { Cart } from './cart/entity/cart.entity';
 import { CartModule } from './cart/cart.module';
 import { CartItemModule } from './cart-item/cartItem.module';
 import { Cart_item } from './cart-item/entity/cartItem.entity';
-// import { Payament } from './payament/entity/payament.entity';
+//import { Payament } from './payament/entity/payament.entity';
 import { PayamentModule } from './payament/payament.module';
 import { ScheduleModule } from '@nestjs/schedule';
 
@@ -29,9 +29,9 @@ import { ScheduleModule } from '@nestjs/schedule';
       type: 'mysql',
       host: 'localhost',
       port: 3306,
-      database: 'meubancotest2',
+      database: 'ads_e_commerce',
       username: 'root',
-      password: '12345678',
+      password: '123456',
       entities: [
         Address,
         Category,
@@ -41,7 +41,7 @@ import { ScheduleModule } from '@nestjs/schedule';
         Product,
         Cart,
         Cart_item,
-        // Payament
+        //       Payament
       ],
       synchronize: true,
     }),
@@ -55,7 +55,7 @@ import { ScheduleModule } from '@nestjs/schedule';
     CartModule,
     CartItemModule,
     PayamentModule,
-    ScheduleModule.forRoot(), 
+    ScheduleModule.forRoot(),
   ],
   controllers: [AppController],
   providers: [AppService],
