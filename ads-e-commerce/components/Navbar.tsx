@@ -1,0 +1,45 @@
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import "@fortawesome/fontawesome-svg-core/styles.css";
+import "./Navbar.css";
+import { faShoppingCart, faUser } from "@fortawesome/free-solid-svg-icons";
+import Link from "next/link";
+
+export default function Navbar() {
+  return (
+    <nav className="fixed top-0 w-full flex items-center py-2 px-8 justify-between z-50 bg-slate-800 text-gray-300">
+      <Link
+        href="/"
+        className="uppercase font-bold text-md h-12 flex items-center"
+      >
+        ADS STORE
+      </Link>
+    </nav>
+  );
+}
+
+// <nav className="fixed top-0 w-full flex items-center py-2 px-8 justify-between z-50 bg-slate-800 text-gray-300">
+//   <div className="navbar-left">
+//     <a href="/" className="logo">
+//       ADS STORE
+//     </a>
+//   </div>
+//   <div className="navbar-center">
+//     <ul className="nav-links">
+//       <li>
+//         <a href="/produtos">Produtos</a>
+//       </li>
+//       <li>
+//         <a href="/categorias">Categorias</a>
+//       </li>
+//     </ul>
+//   </div>
+//   <div className="navbar-right">
+//     <a href="/carrinho" className="cart-icon">
+//       <span className="cart-count">0</span>
+//       <FontAwesomeIcon icon={faShoppingCart} size="2x" color="white" />
+//     </a>
+//     <a href="/usuario" className="user-icon" color="white">
+//       <FontAwesomeIcon icon={faUser} size="2x" />
+//     </a>
+//   </div>
+// </nav>
