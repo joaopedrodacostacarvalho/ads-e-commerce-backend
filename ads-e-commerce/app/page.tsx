@@ -1,20 +1,9 @@
 import Produto from "@/components/Produto";
+import { findAllProducts } from "@/services/product.service";
 import { Product } from "@/services/types";
 
-
-// import Image from "next/image";
-async function getProdutos() {
-  const res = await fetch("http://localhost:3000/api/product/getall");
-
-  if (!res.ok) {
-    throw new Error("Falhou a busca de produtos");
-  }
-
-  return res.json();
-}
-
 export default async function Home() {
-  const produtos = await getProdutos();
+  const produtos = await findAllProducts();
   console.log(produtos);
 
   return (
