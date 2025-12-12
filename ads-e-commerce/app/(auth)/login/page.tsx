@@ -24,9 +24,6 @@ export default function LoginPage() {
   // Obtém a função de login do Contexto
   const { login: contextLogin } = useAuth();
 
-  // Define para onde redirecionar:
-  // 1. Para a rota especificada pelo parâmetro 'redirect' na URL (ex: /login?redirect=/cart)
-  // 2. Ou para a página de conta padrão (/account)
   const redirectTo = searchParams.get("redirect") || "/account";
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -36,7 +33,6 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-
       await contextLogin({ email, password });
 
       setSuccessMessage("Login realizado com sucesso! Redirecionando...");
@@ -47,7 +43,7 @@ export default function LoginPage() {
       }, 500);
     } catch (e: any) {
       console.error(e);
-      // Extrai a mensagem de erro da resposta da API ou usa uma mensagem genérica
+      // Extrai a mensagem de erro. Nota: Se o erro vier do contexto, pode ser apenas e.message.
       const apiError =
         e.message ||
         e.response?.data?.message ||
