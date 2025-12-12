@@ -4,7 +4,7 @@ import { Product } from "@/services/types";
 
 // import Image from "next/image";
 async function getProdutos() {
-  const res = await fetch("https://fakestoreapi.com/products");
+  const res = await fetch("http://localhost:3000/api/product/getall");
 
   if (!res.ok) {
     throw new Error("Falhou a busca de produtos");
