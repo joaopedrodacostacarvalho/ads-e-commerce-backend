@@ -2,66 +2,53 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { decodeJwt } from "jose";
 
-// Define as rotas que precisam de autenticação
-const protectedRoutes = ["/account", "/admin"];
-// Define as rotas que só podem ser acessadas por vendedores
+const protectedRoutes = ["/account", "/checkout", "/admin"];
 const adminRoutes = ["/admin"];
-// Define as rotas que não devem ser acessadas por usuários logados
 const authRoutes = ["/login", "/register"];
 
-// A chave do cookie onde o token JWT está armazenado
-const AUTH_TOKEN_KEY = "jwt-token";
-
 export async function middleware(request: NextRequest) {
+  const token = request.cookies.get("jwt-token")?.value;
   const { pathname } = request.nextUrl;
-  const token = request.cookies.get(AUTH_TOKEN_KEY)?.value;
-  let decodedToken;
-  let userRole: "consumidor" | "vendedor" | null = null;
+
+  let role: string | null = null;
+  let isAuthenticated = false;
 
   if (token) {
     try {
-      decodedToken = decodeJwt(token);
-      userRole = decodedToken.role as "consumidor" | "vendedor";
-    } catch (error) {
-      // Token inválido, forçar logout
-      console.error("Token inválido no middleware.");
-      request.cookies.delete(AUTH_TOKEN_KEY);
-      if (protectedRoutes.some((route) => pathname.startsWith(route))) {
-        return NextResponse.redirect(new URL("/login", request.url));
-      }
+      const payload = decodeJwt(token);
+      role = payload.role as string;
+      isAuthenticated = true;
+    } catch {
+      // Token inválido
     }
   }
 
-  const isAuthenticated = !!token && !!decodedToken;
-
-  // 1. Proteger Rotas (Redirecionar para /login se não autenticado)
+  // 1. Redirecionar para login se tentar acessar rota protegida sem auth
   if (
-    protectedRoutes.some((route) => pathname.startsWith(route)) &&
+    protectedRoutes.some((path) => pathname.startsWith(path)) &&
     !isAuthenticated
   ) {
-    return NextResponse.redirect(new URL("/login", request.url));
+    const url = new URL("/login", request.url);
+    url.searchParams.set("redirect", pathname); // Guarda a origem para redirecionar depois
+    return NextResponse.redirect(url);
   }
 
-  // 2. Proteger Rotas de Vendedor (Redirecionar se não for 'vendedor')
+  // 2. Proteger rotas de Admin
   if (
-    adminRoutes.some((route) => pathname.startsWith(route)) &&
-    isAuthenticated &&
-    userRole !== "vendedor"
+    adminRoutes.some((path) => pathname.startsWith(path)) &&
+    role !== "vendedor"
   ) {
-    return NextResponse.redirect(new URL("/account", request.url)); // Redireciona para uma área comum
+    return NextResponse.redirect(new URL("/account", request.url));
   }
 
-  // 3. Impedir Acesso a Rotas de Auth para Logados (Redirecionar para /account ou /admin)
+  // 3. Redirecionar usuários logados para fora das páginas de login/registro
   if (authRoutes.includes(pathname) && isAuthenticated) {
-    const redirectUrl =
-      userRole === "vendedor" ? "/admin/products/manage" : "/account";
-    return NextResponse.redirect(new URL(redirectUrl, request.url));
+    return NextResponse.redirect(new URL("/account", request.url));
   }
 
   return NextResponse.next();
 }
 
 export const config = {
-  // Configurações do matcher para as rotas
-  matcher: ["/login", "/register", "/account/:path*", "/admin/:path*"],
+  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
 };

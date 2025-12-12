@@ -1,5 +1,6 @@
-// Produto
-export type Product = {
+// src/services/types.ts
+
+export interface Product {
   id: number;
   name: string;
   description: string | null;
@@ -9,79 +10,38 @@ export type Product = {
   categoryId: number;
   isActive: boolean;
   imageUrl: string;
-};
+}
 
-export type CreateProductDto = {
-  name: string;
-  description?: string;
-  price: number;
-  stock: number;
-  categoryId: number;
-  imageUrl: string;
-};
+export interface PaginatedResponse<T> {
+  data: T[]; 
+  totalItems: number;
+  totalPages: number;
+  currentPage: number;
+}
 
-export type UpdateProductDto = Partial<CreateProductDto> & {
-  isActive?: boolean;
-};
-
-export type ProductFilterParams = {
-  name?: string;
-  categoryId?: number;
-  minPrice?: number;
-  maxPrice?: number;
-};
-
-// Categoria
-export type Category = {
+export interface Category {
   id: number;
   name: string;
-  products: Product[]; // Simplificado
-};
+  products?: Product[];
+}
 
-export type CreateCategoryDto = {
-  name: string;
-};
-
-export type UpdateCategoryDto = {
-  name?: string; // Simplificado, pois o schema UpdateCategoryDto está vazio
-};
-
-// Usuário / Auth
-export type User = {
-  role: string;
+export interface User {
   id: number;
   name: string;
   email: string;
   phone: string | null;
   registrationDate: string;
-  // password não incluído, pois é writeOnly
-  // cart, address - relações que podem ser complexas
-};
+  role?: "consumidor" | "vendedor"; 
+}
 
-export type LoginReq = {
+export interface JWTPayload {
   email: string;
-  password: string;
-};
+  role: string;
+  exp: number; // UNIX timestamp em segundos
+  iat: number; // Emitido em
+}
 
-export type UserRequest = {
-  name: string;
-  email: string;
-  password: string;
-  phone?: string;
-  role: "consumidor" | "vendedor";
-};
-
-export type AuthResponse = {
-  token: string;
-  user: User;
-};
-
-export type UpdateClientDto = {
-  password?: string;
-};
-
-// Endereço
-export type Address = {
+export interface Address {
   id: number;
   street: string;
   number: number;
@@ -91,10 +51,65 @@ export type Address = {
   zipCode: string;
   isDefault: boolean;
   clientId: number;
-  user?: User; // Relação
-};
+}
 
-export type CreateAddressDto = {
+// --- DTOs (Data Transfer Objects) ---
+
+// Produto
+export interface CreateProductDto {
+  name: string;
+  description?: string;
+  price: number;
+  stock: number;
+  categoryId: number;
+  imageUrl: string;
+}
+
+export interface UpdateProductDto extends Partial<CreateProductDto> {
+  isActive?: boolean;
+}
+
+export interface ProductFilterParams {
+  name?: string;
+  categoryId?: number;
+  minPrice?: number;
+  maxPrice?: number;
+}
+
+// Categoria
+export interface CreateCategoryDto {
+  name: string;
+}
+
+export interface UpdateCategoryDto {
+  name?: string;
+}
+
+// Auth & User
+export interface LoginReq {
+  email: string;
+  password: string;
+}
+
+export interface UserRequest {
+  name: string;
+  email: string;
+  password: string;
+  phone?: string;
+  role: "consumidor" | "vendedor";
+}
+
+export interface AuthResponse {
+  token: string;
+  user: User;
+}
+
+export interface UpdateClientDto {
+  password?: string;
+}
+
+// Endereço
+export interface CreateAddressDto {
   street: string;
   number: number;
   complement?: string;
@@ -103,9 +118,9 @@ export type CreateAddressDto = {
   zipCode: string;
   isDefault?: boolean;
   clientId: number;
-};
+}
 
-export type UpdateAddressDto = Partial<CreateAddressDto>; // Simplificado
+export interface UpdateAddressDto extends Partial<CreateAddressDto> {}
 
 // Pedido (Order)
 export type OrderStatus =
@@ -114,52 +129,57 @@ export type OrderStatus =
   | "PAGO"
   | "CANCELADO";
 
-export type OrderItem = {
-  // Conteúdo Omitido no Swagger, mas é uma relação
-};
+export interface OrderItem {
+  id: number;
+  productId: number;
+  quantity: number;
+  price: number; // Histórico do preço no momento da compra
+  productName?: string; // Útil para display
+}
 
-export type Order = {
+export interface Order {
   id: number;
   status: OrderStatus;
   subtotal: number;
   totalQuantity: number;
   total: number;
   client: User;
-  items: OrderItem[];
+  items: OrderItem[]; 
   createdAt: string;
   updatedAt: string;
-};
+}
 
-export type CreateOrderDt = {
+export interface CreateOrderDto {
   userId: number;
-};
+}
 
-export type UpdateOrderDto = {
+export interface UpdateOrderDto {
   status: OrderStatus;
-};
+}
 
-export type CreateOrderItemDto = {
+// Carrinho
+export interface CartItem {
+  id: number;
   productId: number;
   quantity: number;
-  orderId: number;
-};
+  product: Product; 
+  subtotal: number;
+}
 
-// Carrinho (Cart & CartItem)
-export type Cart = {
-    data: unknown;
-  // Conteúdo Omitido no Swagger, mas é uma relação do User
-};
+export interface Cart {
+  id: number;
+  userId: number;
+  items: CartItem[];
+  total: number;
+  totalItems: number;
+}
 
-export type CartItemReq = {
+export interface AddToCartDto {
   productId: number;
   quantity: number;
-};
+}
 
-export type CartItemUpdate = {
+export interface UpdateCartItemDto {
   cartItemId: number;
   quantity: number;
-};
-
-export type PayOrderDto = {
-  orderId: number; // Supondo, já que o schema está vazio
-};
+}

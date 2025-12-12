@@ -1,44 +1,77 @@
 import { findAllProducts } from "@/services/product.service";
-import { Product } from "@/services/types";
-import Produto from "@/components/Produto";
+import ProductCard from "@/components/ProductCard";
+import { Product } from "@/services/types"; // Importando o tipo para Products
 
-// A função assíncrona da página agora usa o serviço que, por sua vez, usa Axios.
-async function getProdutos() {
-  try {
-    // ESTA LINHA CHAMA A FUNÇÃO DE SERVIÇO QUE UTILIZA AXIOS INTERNAMENTE.
-    const produtos = await findAllProducts({});
-    return produtos;
-  } catch (error) {
-    console.error("Erro ao buscar produtos:", error);
-    throw new Error("Falhou a busca de produtos na API.");
-  }
-}
+export const revalidate = 60;
 
-export default async function Home() {
-  let produtos: Product[] = [];
+export default async function HomePage() {
+  // Use um tipo específico para garantir que o resultado da Promise é um array de Product
+  let products: Product[] = [];
+  let error: string | null = null;
+
   try {
-    produtos = await getProdutos();
-  } catch (error) {
-    return (
-      <div className="max-w-7xl mx-auto pt-8 px-8 xl:px-0">
-        <h1>Falha ao Carregar Produtos</h1>
-        <p>
-          Ocorreu um erro ao conectar-se à API ou buscar os dados. Tente
-          verificar se o backend NestJS está rodando e se a baseURL em
-          `src/services/api.ts` está correta.
-        </p>
-      </div>
-    );
+    const apiResponse = await findAllProducts();
+
+    if (Array.isArray(apiResponse)) {
+      products = apiResponse;
+    } else {
+      // Se não for um array, loga o retorno inesperado e define o erro
+      console.error("A API retornou um formato inesperado:", apiResponse);
+      error = "A estrutura de dados da API está incorreta.";
+    }
+  } catch (e) {
+    console.error("Erro crítico ao carregar home:", e);
+    // Erro de rede, 404, 500, etc.
+    error =
+      "Ocorreu um erro ao carregar a vitrine. Tente novamente mais tarde.";
   }
 
   return (
-    <div className="max-w-7xl mx-auto pt-8 px-8 xl:px-0">
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-10 xl:gap-6">
-        {produtos.map((prod: Product) => (
-          <Produto key={prod.id} produto={prod} />
-        ))}
-      </div>
-      <h1>Hello World</h1>
+    <div className="space-y-8">
+      {/* Banner / Hero Section */}
+      <section className="text-center py-10 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl">
+        <h1 className="text-4xl font-extrabold text-gray-900 tracking-tight">
+          Bem-vindo à ADS Store
+        </h1>
+        <p className="mt-4 max-w-2xl mx-auto text-xl text-gray-500">
+          Projeto de Web III
+        </p>
+      </section>
+
+      {/* Tratamento de Erro Visual */}
+      {error ? (
+        <div className="p-6 bg-red-50 border border-red-200 rounded-lg text-center">
+          <h3 className="text-lg font-medium text-red-800">
+            Indisponibilidade Temporária
+          </h3>
+          <p className="mt-2 text-red-600">{error}</p>
+        </div>
+      ) : (
+        <section>
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-2xl font-bold text-gray-900">Destaques</h2>
+            <a
+              href="/products"
+              className="text-blue-600 hover:text-blue-800 font-medium text-sm"
+            >
+              Ver tudo &rarr;
+            </a>
+          </div>
+
+          {products.length === 0 ? (
+            <p className="text-gray-500 text-center py-10">
+              Nenhum produto em destaque no momento.
+            </p>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+              {/* Uso seguro do .slice(), pois 'products' é garantido ser um Array */}
+              {products.slice(0, 8).map((product) => (
+                <ProductCard key={product.id} product={product} />
+              ))}
+            </div>
+          )}
+        </section>
+      )}
     </div>
   );
 }

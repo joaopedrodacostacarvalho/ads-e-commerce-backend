@@ -1,81 +1,53 @@
 import api from "./api";
-import {
-  Product,
-  CreateProductDto,
-  UpdateProductDto,
-  ProductFilterParams,
-} from "./types";
+import { Product, CreateProductDto, UpdateProductDto } from "./types";
+
+// Endereço base da controller de Produto
+const PRODUCT_BASE_URL = "/product";
 
 /**
- * Endpoint: GET /product/getall
- * Sumário: Buscar todos produtos com filtros opcionais.
+ * Busca todos os produtos ativos.
+ * @returns Lista de objetos Product.
  */
-export async function findAllProducts(
-  filters: ProductFilterParams = {}
-): Promise<Product[]> {
-  const response = await api.get<Product[]>("/product/getall", {
-    params: filters,
-  });
-  return response.data;
+export async function findAllProducts(): Promise<Product[]> {
+  const { data } = await api.get<Product[]>(PRODUCT_BASE_URL);
+  return data;
 }
 
 /**
- * Endpoint: GET /product/myproducts
- * Sumário: Buscar produtos do usuário (vendedor) logado. (Requer JWT)
+ * Busca um produto específico pelo ID.
  */
-export async function findMyProducts(
-  filters: ProductFilterParams = {}
-): Promise<Product[]> {
-  const response = await api.get<Product[]>("/product/myproducts", {
-    params: filters,
-  });
-  return response.data;
+export async function findProductById(id: number): Promise<Product> {
+  const { data } = await api.get<Product>(`${PRODUCT_BASE_URL}/${id}`);
+  return data;
 }
 
 /**
- * Endpoint: GET /product/{id}
- * Sumário: Lista produto com id.
+ * Cria um novo produto (função de vendedor/admin).
  */
-export async function findOneProduct(id: number): Promise<Product> {
-  const response = await api.get<Product>(`/product/${id}`);
-  return response.data;
+export async function createProduct(
+  productData: CreateProductDto
+): Promise<Product> {
+  const { data } = await api.post<Product>(PRODUCT_BASE_URL, productData);
+  return data;
 }
 
 /**
- * Endpoint: POST /product/create
- * Sumário: Cria um novo produto. (Requer JWT)
- */
-export async function createProduct(data: CreateProductDto): Promise<Product> {
-  const response = await api.post<Product>("/product/create", data);
-  return response.data;
-}
-
-/**
- * Endpoint: PATCH /product/{id}
- * Sumário: Atualiza parcialmente um produto. (Requer JWT)
+ * Atualiza um produto existente.
  */
 export async function updateProduct(
   id: number,
-  data: UpdateProductDto
+  productData: UpdateProductDto
 ): Promise<Product> {
-  const response = await api.patch<Product>(`/product/${id}`, data);
-  return response.data;
+  const { data } = await api.patch<Product>(
+    `${PRODUCT_BASE_URL}/${id}`,
+    productData
+  );
+  return data;
 }
 
 /**
- * Endpoint: DELETE /product/inative/{id}
- * Sumário: Inativa um produto (isActive = false). (Requer JWT)
+ * Remove um produto.
  */
-export async function inativeProduct(id: number): Promise<Product> {
-  const response = await api.delete<Product>(`/product/inative/${id}`);
-  return response.data;
-}
-
-/**
- * Endpoint: DELETE /product/delete/{id}
- * Sumário: Deleta um produto (remoção física ou lógica). (Requer JWT)
- */
-export async function deleteProduct(id: number): Promise<Product> {
-  const response = await api.delete<Product>(`/product/delete/${id}`);
-  return response.data;
+export async function deleteProduct(id: number): Promise<void> {
+  await api.delete(`${PRODUCT_BASE_URL}/${id}`);
 }

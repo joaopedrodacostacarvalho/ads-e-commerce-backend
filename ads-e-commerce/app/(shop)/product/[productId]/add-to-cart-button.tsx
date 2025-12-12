@@ -1,79 +1,80 @@
-("use client");
+"use client";
 
-import { addToCart } from "@/services/cart.service";
 import { useState } from "react";
+import { addToCart } from "@/services/cart.service";
 
 export default function AddToCartButton({
   productId,
   stock,
+  isActive,
 }: {
   productId: number;
   stock: number;
+  isActive: boolean;
 }) {
+  const [loading, setLoading] = useState(false);
   const [quantity, setQuantity] = useState(1);
-  const [status, setStatus] = useState<
-    "idle" | "loading" | "success" | "error"
-  >("idle");
 
-  const handleAddToCart = async () => {
-    if (quantity <= 0 || quantity > stock) {
-      alert("Quantidade inválida.");
-      return;
-    }
-    setStatus("loading");
+  const handleAdd = async () => {
+    setLoading(true);
     try {
       await addToCart({ productId, quantity });
-      setStatus("success");
-      alert(
-        `${quantity} unidade(s) de ${productId} adicionada(s) ao carrinho!`
-      );
-    } catch (error) {
-      setStatus("error");
-      console.error(error);
-      alert("Erro ao adicionar produto ao carrinho. Você está logado?");
+      alert("Produto adicionado ao carrinho!");
+    } catch (error: any) {
+      if (error.response?.status === 401) {
+        window.location.href = "/login";
+      } else {
+        alert("Erro ao adicionar. Tente novamente.");
+      }
     } finally {
-      setTimeout(() => setStatus("idle"), 2000);
+      setLoading(false);
     }
   };
 
+  if (!isActive) {
+    return (
+      <div className="p-3 bg-red-100 text-red-700 rounded">
+        Produto Indisponível
+      </div>
+    );
+  }
+
+  if (stock <= 0) {
+    return (
+      <div className="p-3 bg-yellow-100 text-yellow-700 rounded">
+        Sem Estoque
+      </div>
+    );
+  }
+
   return (
-    <div style={{ marginTop: "20px" }}>
-      <label htmlFor="quantity">Quantidade:</label>
-      <input
-        type="number"
-        id="quantity"
-        value={quantity}
-        min="1"
-        max={stock}
-        onChange={(e) =>
-          setQuantity(Math.min(stock, parseInt(e.target.value) || 1))
-        }
-        style={{ width: "60px", marginRight: "10px", padding: "5px" }}
-      />
+    <div className="flex flex-col gap-3 max-w-xs">
+      <div className="flex items-center gap-2">
+        <label htmlFor="qty" className="font-medium text-gray-700">
+          Qtd:
+        </label>
+        <input
+          id="qty"
+          type="number"
+          min="1"
+          max={stock}
+          value={quantity}
+          onChange={(e) =>
+            setQuantity(
+              Math.min(stock, Math.max(1, parseInt(e.target.value) || 1))
+            )
+          }
+          className="border border-gray-300 rounded px-2 py-1 w-20"
+        />
+        <span className="text-xs text-gray-500">Max: {stock}</span>
+      </div>
       <button
-        onClick={handleAddToCart}
-        disabled={status === "loading" || stock === 0}
-        style={{
-          padding: "10px 20px",
-          backgroundColor: stock > 0 ? "blue" : "gray",
-          color: "white",
-          border: "none",
-        }}
+        onClick={handleAdd}
+        disabled={loading}
+        className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-blue-300"
       >
-        {stock === 0
-          ? "Fora de Estoque"
-          : status === "loading"
-          ? "Adicionando..."
-          : "Adicionar ao Carrinho"}
+        {loading ? "Adicionando..." : "Adicionar ao Carrinho"}
       </button>
-      {status === "success" && (
-        <span style={{ color: "green", marginLeft: "10px" }}>
-          Adicionado!
-        </span>
-      )}
-      {status === "error" && (
-        <span style={{ color: "red", marginLeft: "10px" }}>Falha!</span>
-      )}
     </div>
   );
 }

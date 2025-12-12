@@ -1,68 +1,57 @@
 import { findAllProducts } from "@/services/product.service";
-import { Product, ProductFilterParams } from "@/services/types";
+import ProductCard from "@/components/ProductCard";
+import { Product } from "@/services/types";
 
-// Função para buscar dados do lado do servidor (Server Component)
-async function getProducts(searchParams: {
-  [key: string]: string | string[] | undefined;
-}): Promise<Product[]> {
-  const filters: ProductFilterParams = {
-    name: searchParams.name as string,
-    categoryId: searchParams.categoryId
-      ? parseInt(searchParams.categoryId as string)
-      : undefined,
-    minPrice: searchParams.minPrice
-      ? parseFloat(searchParams.minPrice as string)
-      : undefined,
-    maxPrice: searchParams.maxPrice
-      ? parseFloat(searchParams.maxPrice as string)
-      : undefined,
-  };
+// Garante que o fetch ocorra dinamicamente em cada requisição
+export const dynamic = "force-dynamic";
 
-  // Filtra valores inválidos para não enviar para a API
-  const validFilters = Object.fromEntries(
-    Object.entries(filters).filter(
-      ([, value]) => value !== undefined && value !== null && value !== ""
-    )
-  );
+export default async function ProductsListPage() {
+  let products: Product[] = [];
+  let error: string | null = null;
 
-  return findAllProducts(validFilters);
-}
+  try {
+    const apiResponse = await findAllProducts();
 
-export default async function ProductsPage({
-  searchParams,
-}: {
-  searchParams: { [key: string]: string | string[] | undefined };
-}) {
-  const products = await getProducts(searchParams);
+    // Garantia de que o retorno é um array, conforme correção anterior
+    if (Array.isArray(apiResponse)) {
+      // Filtra produtos inativos, pois esta é a lista de vendas
+      products = apiResponse.filter((p) => p.isActive);
+    } else {
+      console.error(
+        "A API retornou um formato inesperado para a lista de produtos."
+      );
+      error = "A estrutura de dados da API está incorreta.";
+    }
+  } catch (e) {
+    console.error("Erro ao carregar a lista de produtos:", e);
+    // Se a API estiver offline ou inacessível
+    error =
+      "Ocorreu um erro ao carregar os produtos. Verifique o servidor da API (porta 3000).";
+  }
 
   return (
-    <div>
-      <h2>🛒 Catálogo de Produtos</h2>
-      {/* O formulário de filtros e a lógica de busca seriam implementados em um Client Component */}
-      {products.length === 0 ? (
-        <p>Nenhum produto encontrado com os filtros aplicados.</p>
+    <div className="space-y-8">
+      <h1 className="text-3xl font-bold text-gray-900 border-b pb-4">
+        Todos os Produtos
+      </h1>
+
+      {error ? (
+        <div className="p-6 bg-red-50 border border-red-200 rounded-lg text-center">
+          <h3 className="text-lg font-medium text-red-800">
+            Indisponibilidade
+          </h3>
+          <p className="mt-2 text-red-600">{error}</p>
+        </div>
+      ) : products.length === 0 ? (
+        <div className="p-6 bg-yellow-50 border border-yellow-200 rounded-lg text-center">
+          <p className="text-gray-600 py-10">
+            Nenhum produto ativo encontrado no momento.
+          </p>
+        </div>
       ) : (
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(4, 1fr)",
-            gap: "20px",
-          }}
-        >
-          {products.map((p) => (
-            <div
-              key={p.id}
-              style={{ border: "1px solid #ddd", padding: "15px" }}
-            >
-              <img
-                src={p.imageUrl}
-                alt={p.name}
-                style={{ width: "100%", height: "auto" }}
-              />
-              <h3>{p.name}</h3>
-              <p>R$ {p.price.toFixed(2)}</p>
-              <a href={`/products/${p.id}`}>Ver Detalhes</a>
-            </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          {products.map((product) => (
+            <ProductCard key={product.id} product={product} />
           ))}
         </div>
       )}
