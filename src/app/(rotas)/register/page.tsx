@@ -55,6 +55,14 @@ export default function Register() {
 
     } catch (error) {
       setError(`Houve um problema ao fazer o cadastro: ${error}`);
+    } finally {
+      setFormData({
+        email: "",
+        name: "",
+        password: "",
+        phone: "",
+        role: "",
+      })
     }
   };
   return (

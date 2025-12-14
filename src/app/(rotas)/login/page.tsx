@@ -26,8 +26,6 @@ export default function Login() {
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    console.log(`onSubmit com data: email: ${formData.email} senha: ${formData.password}`);
-
     try {
       const respose = await fetch(`${BASE_URL}/auth/login`, {
         method: "POST",
@@ -36,6 +34,7 @@ export default function Login() {
         },
         body: JSON.stringify(formData),
       });
+
 
       if (!respose.ok) {
         const errorData = await respose.json();
@@ -49,6 +48,11 @@ export default function Login() {
       console.log(token);
     } catch (error) {
       setError(`Houve um problema ao fazer o login: ${error}`);
+    } finally {
+      setFormData({
+        email: "",
+        password: ""
+      })
     }
   };
 
