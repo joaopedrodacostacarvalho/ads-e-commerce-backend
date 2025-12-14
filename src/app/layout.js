@@ -1,6 +1,6 @@
 import React from "react";
 import "./globals.css";
-import Navegation from "./components/navbar.home";
+import Navegation from "./components/navegationComponents/navbar.home";
 import ThemeRegistry from "./infra/themeregistry";
 
 export default function RootLayout({ children }) {
@@ -8,8 +8,8 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body>
         <ThemeRegistry>
-         <Navegation/>
-         {children}
+          <Navegation />
+          {children}
         </ThemeRegistry>
       </body>
     </html>
