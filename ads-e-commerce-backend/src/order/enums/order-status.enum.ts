@@ -1,6 +1,0 @@
-export enum OrderStatus {
-  OPEN = `ABERTO`,
-  WAITING_PAYMENT = `AGUARDANDO_PAGAMENTO`,
-  PAID = `PAGO`,
-  CANCELLED = `CANCELADO`,
-}
