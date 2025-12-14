@@ -101,7 +101,6 @@ export default function Register() {
           value={formData.phone}
           onChange={handleInputChange}
           placeholder="+55 11 4001-8922"
-          required
         />
         <label htmlFor="role">Tipo de conta: </label>
         <p>
