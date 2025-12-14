@@ -45,7 +45,7 @@ export default function Login() {
 
       const data = await respose.json();
       console.log(data);
-
+      localStorage.setItem("token", data.token);
     } catch (error) {
       setError(`Houve um problema ao fazer o login: ${error}`);
     }
