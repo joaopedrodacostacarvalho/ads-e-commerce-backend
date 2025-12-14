@@ -1,27 +1,26 @@
 {
-  "name": "ads-e-commerce-frontend-mui",
+  "name": "aplication",
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev -p 3001",
+    "dev": "next dev",
     "build": "next build",
-    "start": "next start -p 3001",
+    "start": "next start",
     "lint": "eslint"
   },
   "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
+    "@mui/icons-material": "^7.3.6",
+    "@mui/material": "^7.3.6",
     "next": "16.0.10",
     "react": "19.2.1",
-    "react-dom": "19.2.1",
-    "zod": "^4.1.13"
+    "react-dom": "19.2.1"
   },
   "devDependencies": {
-    "@tailwindcss/postcss": "^4",
-    "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
+    "@types/node": "25.0.2",
+    "@types/react": "19.2.7",
     "eslint": "^9",
-    "eslint-config-next": "16.0.10",
-    "tailwindcss": "^4",
-    "typescript": "^5"
+    "eslint-config-next": "16.0.10"
   }
 }
