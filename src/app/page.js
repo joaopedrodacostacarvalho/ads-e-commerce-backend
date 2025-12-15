@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import Navegation from './components/navegationComponents/navbar.home';
+import ProfilerConfig from './(rotas)/(client-area)/profile.client.config';
 
 
 
@@ -19,6 +20,9 @@ import Navegation from './components/navegationComponents/navbar.home';
     <>
     <Navegation />
     <div>
+
+      {/* ter um if , se for client , rendderiza components de clients */}
+      {/* Client */}
       <h1>Página home!! {contador} </h1>
       <h2>Chamar outa página:<Link href="/login">Ir para Login</Link></h2>
       <button onClick={() => {acionarContador()}}>CLIQUE AQUI +</button>
