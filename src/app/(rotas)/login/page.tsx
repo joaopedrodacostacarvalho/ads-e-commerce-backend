@@ -6,10 +6,12 @@ import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { Alert, Box, Button, TextField, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
+import { useRouter } from 'next/navigation';
 
 type LoginFormInput = z.infer<typeof LoginFormSchema>;
 
 export default function Login() {
+  const router = useRouter();
   const [apiError, setApiError] = useState("");
 
   const BASE_URL = "http://localhost:3000"
@@ -52,6 +54,7 @@ export default function Login() {
       success = true;
       console.log(result);
       localStorage.setItem("token", result.token);
+      router.push("/");
     } catch (error: any) {
       setApiError(error.message);
     } finally {
@@ -79,6 +82,7 @@ export default function Login() {
           {...register("email")}
           error={!errors.email}
           helperText={errors.email?.message}
+          required
         />
 
         <TextField
@@ -89,6 +93,7 @@ export default function Login() {
           {...register("password")}
           error={!errors.password}
           helperText={errors.password?.message}
+          required
         />
 
         <Button
