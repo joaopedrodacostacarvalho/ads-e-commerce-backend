@@ -7,7 +7,7 @@ import { RegisterFormSchema } from "./registerSchema";
 import { useForm } from "react-hook-form";
 import { Alert, Box, Button, FormControl, FormControlLabel, FormLabel, RadioGroup, Radio, TextField, Typography } from "@mui/material";
 import { useRouter } from 'next/navigation';
-import Navegation from "../../components/navegationComponents/navbar.home";
+import Navegation from "../../../components/navegationComponents/navbar.home";
 
 
 type RegisterFormInput = z.infer<typeof RegisterFormSchema>;

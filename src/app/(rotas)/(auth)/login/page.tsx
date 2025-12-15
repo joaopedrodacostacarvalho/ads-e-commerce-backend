@@ -7,13 +7,15 @@ import { useForm } from "react-hook-form";
 import { Alert, Box, Button, TextField, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useRouter } from 'next/navigation';
-import Navegation from "../../components/navegationComponents/navbar.home";
+import Navegation from "../../../components/navegationComponents/navbar.home";
+import { useAuth } from "../_AuthContext";
 
 
 type LoginFormInput = z.infer<typeof LoginFormSchema>;
 
 export default function Login() {
   const router = useRouter();
+  const { login } = useAuth();
   const [apiError, setApiError] = useState("");
 
   const BASE_URL = "http://localhost:3000"
@@ -54,9 +56,9 @@ export default function Login() {
 
       const result = await response.json();
       success = true;
-      console.log(result);
-      localStorage.setItem("token", result.token);
+      login(result.token);
       router.push("/");
+
     } catch (error: any) {
       setApiError(error.message);
     } finally {
@@ -66,55 +68,55 @@ export default function Login() {
 
   return (
     <>
-    <Navegation/>
-    <Box maxWidth={400} mx="auto" mt={6} >
-      <Typography variant="h4" >
-        Login
-      </Typography>
-
-      {apiError && (
-        <Alert severity="error" sx={{ mb: 2 }}>
-          {apiError}
-        </Alert>
-      )}
-
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <TextField
-          label="Email"
-          fullWidth
-          margin="normal"
-          {...register("email")}
-          error={!errors.email}
-          helperText={errors.email?.message}
-          required
-        />
-
-        <TextField
-          label="Senha"
-          type="password"
-          fullWidth
-          margin="normal"
-          {...register("password")}
-          error={!errors.password}
-          helperText={errors.password?.message}
-          required
-        />
-
-        <Button
-          type="submit"
-          variant="contained"
-          fullWidth
-          disabled={isSubmitting}
-          sx={{ mt: 2 }}
-        >
-          {isSubmitting ? "Entrando..." : "Entrar"}
-        </Button>
-
-        <Typography mt={2}>
-          Ainda não tem uma conta? <Button href="/register">Cadastre-se</Button>
+      <Navegation />
+      <Box maxWidth={400} mx="auto" mt={6} >
+        <Typography variant="h4" >
+          Login
         </Typography>
-      </form>
-    </Box >
+
+        {apiError && (
+          <Alert severity="error" sx={{ mb: 2 }}>
+            {apiError}
+          </Alert>
+        )}
+
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <TextField
+            label="Email"
+            fullWidth
+            margin="normal"
+            {...register("email")}
+            error={!errors.email}
+            helperText={errors.email?.message}
+            required
+          />
+
+          <TextField
+            label="Senha"
+            type="password"
+            fullWidth
+            margin="normal"
+            {...register("password")}
+            error={!errors.password}
+            helperText={errors.password?.message}
+            required
+          />
+
+          <Button
+            type="submit"
+            variant="contained"
+            fullWidth
+            disabled={isSubmitting}
+            sx={{ mt: 2 }}
+          >
+            {isSubmitting ? "Entrando..." : "Entrar"}
+          </Button>
+
+          <Typography mt={2}>
+            Ainda não tem uma conta? <Button href="/register">Cadastre-se</Button>
+          </Typography>
+        </form>
+      </Box >
     </>
   )
 }
