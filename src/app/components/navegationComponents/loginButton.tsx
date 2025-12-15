@@ -23,8 +23,6 @@ const MyTypography = styled(Typography)(({ theme }) => ({
   }
 }))
 
-
-
 export default function LoginButton() {
   return (
     <Button sx={{color:'black'}}>
@@ -39,7 +37,7 @@ export default function LoginButton() {
         {/* <AccountCircleIcon sx={{ fontSize: 40 }} /> */}
         <MyAccountCircleIcon/>
         {/* <Typography variant="caption" sx={{fontSize: 15}}>Login</Typography> */}
-        <MyTypography variant="caption">Login</MyTypography>
+        <MyTypography variant="caption">Register</MyTypography>
       </Box>
     </Button>
   );

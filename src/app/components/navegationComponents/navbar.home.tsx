@@ -1,12 +1,12 @@
 'use client'
 
 import logo from "../../images/xx.png"
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { MyAppbar, MyImage, MyTooldbar } from "../../styles/navegation.styles";
 import React from "react";
 import { Search } from "@mui/icons-material";
 import SearchIcon from '@mui/icons-material/Search';
-import { Box, InputBase } from "@mui/material";
+import { Box, InputBase} from "@mui/material";
 import { styled } from '@mui/material/styles';
 import type { Theme } from '@mui/material/styles';
 import SearchInput from "./searchappbar";
@@ -16,6 +16,7 @@ import LoginButton from "./loginButton";
 
 import { Button } from '@mui/material';
 import LoginIcon from '@mui/icons-material/Login';
+import Link from "next/link";
 
 const MyBox = styled(Box)(({ theme }) => ({  
   border:'solid 2px red', 
@@ -33,31 +34,53 @@ const MyBox = styled(Box)(({ theme }) => ({
 
 export default function Navegation() {
 
-  const [openDrawer, setOpenDrawer] = useState(false)
+const [token, setToken] = useState(null);
+ useEffect(() => {
+    const savedToken = localStorage.getItem('token');
+    setToken(savedToken);
+  }, []);
 
-
-  const togleDrawer = () => {
-    return setOpenDrawer(!openDrawer);
-  }
+  console.log(`Olha o token em navbar.home: ${token}`)
 
 
 
   return (
     <>
+     <>
       <MyAppbar position="static">
         <MyTooldbar>
           <div style={{ display: 'flex', alignItems: 'center', border: 'solid, 2px, red' }}>
-            {/*erro simples aqui na iomagem*/}
+            <Link href="/" passHref>
             <MyImage src={logo} alt="Logo" />
+            </Link>
           </div>
-          {/*   */}
           <MyBox>
-            <SearchInput />
+              {token == null ? (
+              <>
+                 {/* <h1>component A</h1>
+                  <h1>component B</h1> 
+                  <CartButton /> */}
+                 <SearchInput />
+                 <CartButton />
+                 <LoginButton />
+              </>
+              ) : (
+                <>
+                 {/* <SearchInput />
+                 <CartButton />
+                 <LoginButton /> */}
+                  <h1>component A</h1>
+                  <h1>component B</h1> 
+                  <CartButton /> 
+              </>
+              )}
+            {/* <SearchInput />
             <CartButton />
-            <LoginButton/>
+            <LoginButton/> */}
           </MyBox>
         </MyTooldbar>
-      </MyAppbar>
+      </MyAppbar> 
+    </>
     </>
   )
 

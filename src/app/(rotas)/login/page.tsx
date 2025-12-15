@@ -7,6 +7,8 @@ import { useForm } from "react-hook-form";
 import { Alert, Box, Button, TextField, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useRouter } from 'next/navigation';
+import Navegation from "../../components/navegationComponents/navbar.home";
+
 
 type LoginFormInput = z.infer<typeof LoginFormSchema>;
 
@@ -63,6 +65,8 @@ export default function Login() {
   }
 
   return (
+    <>
+    <Navegation/>
     <Box maxWidth={400} mx="auto" mt={6} >
       <Typography variant="h4" >
         Login
@@ -111,5 +115,6 @@ export default function Login() {
         </Typography>
       </form>
     </Box >
+    </>
   )
 }
