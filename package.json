@@ -11,11 +11,21 @@
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
+<<<<<<< HEAD
+=======
+    "@hookform/resolvers": "^5.2.2",
+>>>>>>> front-developer
     "@mui/icons-material": "^7.3.6",
     "@mui/material": "^7.3.6",
     "next": "16.0.10",
     "react": "19.2.1",
+<<<<<<< HEAD
     "react-dom": "19.2.1"
+=======
+    "react-dom": "19.2.1",
+    "react-hook-form": "^7.68.0",
+    "zod": "^4.1.13"
+>>>>>>> front-developer
   },
   "devDependencies": {
     "@types/node": "25.0.2",
