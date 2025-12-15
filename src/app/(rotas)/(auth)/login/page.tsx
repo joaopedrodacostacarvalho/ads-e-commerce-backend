@@ -15,7 +15,7 @@ type LoginFormInput = z.infer<typeof LoginFormSchema>;
 
 export default function Login() {
   const router = useRouter();
-  const { login } = useAuth();
+  const { user, login } = useAuth();
   const [apiError, setApiError] = useState("");
 
   const BASE_URL = "http://localhost:3000"
@@ -39,6 +39,14 @@ export default function Login() {
 
     return () => subscription.unsubscribe();
   }, [watch, apiError]);
+
+  // Checa se o usuário está logado, se sim vai pra home
+  useEffect(() => {
+    if (user) router.replace("/");
+  }, [user, router]);
+
+  // Evita de renderizar (tbm pode ser usado para esconder melhor conteúdo protegido)
+  if (user) return null;
 
   const onSubmit = async (data: LoginFormInput) => {
     let success = false;

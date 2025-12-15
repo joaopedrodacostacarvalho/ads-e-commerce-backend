@@ -8,11 +8,13 @@ import { useForm } from "react-hook-form";
 import { Alert, Box, Button, FormControl, FormControlLabel, FormLabel, RadioGroup, Radio, TextField, Typography } from "@mui/material";
 import { useRouter } from 'next/navigation';
 import Navegation from "../../../components/navegationComponents/navbar.home";
+import { useAuth } from "../_AuthContext";
 
 
 type RegisterFormInput = z.infer<typeof RegisterFormSchema>;
 
 export default function Register() {
+  const { user } = useAuth();
   const [apiError, setApiError] = useState("");
   const router = useRouter();
 
@@ -37,6 +39,14 @@ export default function Register() {
 
     return () => subscription.unsubscribe();
   }, [watch, apiError]);
+
+  // Checa se o usuário está logado, se sim vai pra home
+  useEffect(() => {
+    if (user) router.replace("/");
+  }, [user, router]);
+
+  // Evita de renderizar (tbm pode ser usado para esconder melhor conteúdo protegido)
+  if (user) return null;
 
   const onSubmit = async (data: RegisterFormInput) => {
     let success = false;
@@ -66,95 +76,95 @@ export default function Register() {
 
   return (
     <>
-    <Navegation />
-    <Box maxWidth={400} mx="auto" mt={6}>
-      <Typography variant="h4">
-        Cadastro
-      </Typography>
-
-      {apiError && (
-        <Alert severity="error" sx={{ mb: 2 }}>
-          {apiError}
-        </Alert>
-      )}
-
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <TextField
-          label="Nome"
-          fullWidth
-          margin="normal"
-          {...register("name")}
-          error={!errors.name}
-          helperText={errors.name?.message}
-          required
-        />
-
-        <TextField
-          label="Email"
-          fullWidth
-          margin="normal"
-          {...register("email")}
-          error={!errors.email}
-          helperText={errors.email?.message}
-          required
-        />
-
-        <TextField
-          label="Senha"
-          type="password"
-          fullWidth
-          margin="normal"
-          {...register("password")}
-          error={!errors.password}
-          helperText={errors.password?.message}
-          required
-        />
-
-        <TextField
-          label="Telefone"
-          fullWidth
-          margin="normal"
-          {...register("phone")}
-          error={!errors.phone}
-          helperText={errors.phone?.message}
-        />
-
-        <FormControl>
-          <FormLabel>Tipo de conta</FormLabel>
-          <RadioGroup row>
-            <FormControlLabel
-              value="consumidor"
-              control={<Radio />}
-              label="Consumidor"
-              {...register("role")}
-            />
-            <FormControlLabel
-              value="vendedor"
-              control={<Radio />}
-              label="Vendedor"
-              {...register("role")}
-            />
-          </RadioGroup>
-          <Typography color="error" variant="caption">
-            {errors.role?.message}
-          </Typography>
-        </FormControl>
-
-        <Button
-          type="submit"
-          variant="contained"
-          fullWidth
-          sx={{ mt: 3 }}
-          disabled={isSubmitting}
-        >
-          {isSubmitting ? "Cadastrando..." : "Cadastrar"}
-        </Button>
-
-        <Typography mt={2}>
-          Já possui umaconta? <Button href="/login">Faça login</Button>
+      <Navegation />
+      <Box maxWidth={400} mx="auto" mt={6}>
+        <Typography variant="h4">
+          Cadastro
         </Typography>
-      </form>
-    </Box>
+
+        {apiError && (
+          <Alert severity="error" sx={{ mb: 2 }}>
+            {apiError}
+          </Alert>
+        )}
+
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <TextField
+            label="Nome"
+            fullWidth
+            margin="normal"
+            {...register("name")}
+            error={!errors.name}
+            helperText={errors.name?.message}
+            required
+          />
+
+          <TextField
+            label="Email"
+            fullWidth
+            margin="normal"
+            {...register("email")}
+            error={!errors.email}
+            helperText={errors.email?.message}
+            required
+          />
+
+          <TextField
+            label="Senha"
+            type="password"
+            fullWidth
+            margin="normal"
+            {...register("password")}
+            error={!errors.password}
+            helperText={errors.password?.message}
+            required
+          />
+
+          <TextField
+            label="Telefone"
+            fullWidth
+            margin="normal"
+            {...register("phone")}
+            error={!errors.phone}
+            helperText={errors.phone?.message}
+          />
+
+          <FormControl>
+            <FormLabel>Tipo de conta</FormLabel>
+            <RadioGroup row>
+              <FormControlLabel
+                value="consumidor"
+                control={<Radio />}
+                label="Consumidor"
+                {...register("role")}
+              />
+              <FormControlLabel
+                value="vendedor"
+                control={<Radio />}
+                label="Vendedor"
+                {...register("role")}
+              />
+            </RadioGroup>
+            <Typography color="error" variant="caption">
+              {errors.role?.message}
+            </Typography>
+          </FormControl>
+
+          <Button
+            type="submit"
+            variant="contained"
+            fullWidth
+            sx={{ mt: 3 }}
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? "Cadastrando..." : "Cadastrar"}
+          </Button>
+
+          <Typography mt={2}>
+            Já possui umaconta? <Button href="/login">Faça login</Button>
+          </Typography>
+        </form>
+      </Box>
     </>
   )
 }
