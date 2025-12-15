@@ -5,28 +5,36 @@ import LoginIcon from '@mui/icons-material/Login';
 
 import { Box, Typography } from '@mui/material';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import Link from "next/link";
 
 
 const MyAccountCircleIcon = styled(AccountCircleIcon)(({ theme }) => ({
-  fontSize: 40,
+  fontSize: 33,
 
-  [theme.breakpoints.down("sm")]: {
-    fontSize: 25
-  }
+  // [theme.breakpoints.down("sm")]: {
+  //   fontSize: 25
+  // }
 }))
 
 const MyTypography = styled(Typography)(({ theme }) => ({
-  fontSize: 15,
+  fontSize: 13,
 
-  [theme.breakpoints.down("sm")]: {
-    fontSize: 10
-  }
+  // [theme.breakpoints.down("sm")]: {
+  //   fontSize: 10
+  // }
 }))
 
-export default function LoginButton() {
+type LoginButtonProps = {
+  label: string;
+  href:string;
+};
+
+export default function LoginButton({ label, href}: LoginButtonProps) {
 
   return (
-    <Button sx={{ color: 'black' }} href="/login">
+    <>
+    <Link href={href} passHref>
+    <Button sx={{ color: 'black' }}>
       {/* O href neste botão faz com que ele nos leve para a tela de login*/}
       <Box
         sx={{
@@ -39,9 +47,11 @@ export default function LoginButton() {
         {/* <AccountCircleIcon sx={{ fontSize: 40 }} /> */}
         <MyAccountCircleIcon />
         {/* <Typography variant="caption" sx={{fontSize: 15}}>Login</Typography> */}
-        <MyTypography variant="caption">Register</MyTypography>
+        <MyTypography variant="caption">{label}</MyTypography>
       </Box>
     </Button>
+    </Link>
+    </>
   );
 }
 
