@@ -7,6 +7,7 @@ import { RegisterFormSchema } from "./registerSchema";
 import { useForm } from "react-hook-form";
 import { Alert, Box, Button, FormControl, FormControlLabel, FormLabel, RadioGroup, Radio, TextField, Typography } from "@mui/material";
 import { useRouter } from 'next/navigation';
+import Navegation from "../../../components/navegationComponents/navbar.home";
 
 
 type RegisterFormInput = z.infer<typeof RegisterFormSchema>;
@@ -64,6 +65,8 @@ export default function Register() {
   }
 
   return (
+    <>
+    <Navegation />
     <Box maxWidth={400} mx="auto" mt={6}>
       <Typography variant="h4">
         Cadastro
@@ -152,6 +155,7 @@ export default function Register() {
         </Typography>
       </form>
     </Box>
+    </>
   )
 }
 

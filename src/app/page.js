@@ -1,6 +1,7 @@
 'use client'
 import { useState } from 'react';
 import Link from 'next/link';
+import Navegation from './components/navegationComponents/navbar.home';
 
 
 
@@ -15,6 +16,8 @@ import Link from 'next/link';
   const [mostrar, setMostrar] = useState(false)
 
   return (
+    <>
+    <Navegation />
     <div>
       <h1>Página home!! {contador} </h1>
       <h2>Chamar outa página:<Link href="/login">Ir para Login</Link></h2>
@@ -24,5 +27,6 @@ import Link from 'next/link';
 
       {mostrar ? <p>MOSTRANDO</p>: mostrar}
     </div>
+    </>
   );
 }
