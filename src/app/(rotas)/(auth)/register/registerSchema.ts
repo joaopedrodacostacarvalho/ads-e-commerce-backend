@@ -25,3 +25,13 @@ export const RegisterFormSchema = z.object({
   }),
 
 })
+
+export const RegisterAddressFormSchema = z.object({
+  street: z.string(),
+  number: z.string(),
+  complement: z.string(),
+  city: z.string(),
+  state: z.string(),
+  zipCode: z.string(),
+  isDefault: z.boolean(),
+})
