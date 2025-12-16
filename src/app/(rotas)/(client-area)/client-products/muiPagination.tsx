@@ -13,7 +13,16 @@ export function ProductPagination() {
         count={meta.totalPages}
         page={page}
         onChange={(_, value) => setPage(value)}
-        color="primary"
+        sx={{
+      '& .Mui-selected': {
+        backgroundColor: '#FFE600',
+        color: '#000',
+      },
+      '& .MuiPaginationItem-root:hover': {
+        backgroundColor: '#FFE600',
+        opacity: 0.8,
+      },
+    }}
       />
     </Stack>
   );
