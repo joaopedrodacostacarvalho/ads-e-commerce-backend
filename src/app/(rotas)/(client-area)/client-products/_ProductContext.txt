@@ -1,0 +1,117 @@
+"use client";
+
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
+
+/* =======================
+   TYPES
+======================= */
+
+export type Product = {
+  id: number;
+  name: string;
+  description: string | null;
+  price: string;
+  stock: number;
+  reservedStock: number;
+  categoryId: number;
+  isActive: boolean;
+  imageUrl: string;
+  sellerId: number;
+};
+
+type ProductResponse = {
+  data: Product[];
+  meta: {
+    itemsPerPage: number;
+    totalItems: number;
+    currentPage: number;
+    totalPages: number;
+  };
+};
+
+type ProductContextType = {
+  products: Product[];
+  loading: boolean;
+  fetchProducts: () => Promise<void>;
+};
+
+/* =======================
+   CONTEXT
+======================= */
+
+const ProductContext = createContext<ProductContextType | undefined>(undefined);
+
+/* =======================
+   PROVIDER
+======================= */
+
+export function ProductProvider({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchProducts = async () => {
+    try {
+      setLoading(true);
+
+      const response = await fetch(
+        "http://localhost:3000/product/getall"
+      );
+
+      if (!response.ok) {
+        throw new Error("Erro ao buscar produtos");
+      }
+
+      const result: ProductResponse = await response.json();
+
+      // só produtos ativos
+      const activeProducts = result.data.filter(
+        (product) => product.isActive
+      );
+
+      setProducts(activeProducts);
+    } catch (error) {
+      console.error("Erro ao carregar produtos:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
+  return (
+    <ProductContext.Provider
+      value={{
+        products,
+        loading,
+        fetchProducts,
+      }}
+    >
+      {children}
+    </ProductContext.Provider>
+  );
+}
+
+/* =======================
+   HOOK
+======================= */
+
+export function useProducts() {
+  const context = useContext(ProductContext);
+
+  if (!context) {
+    throw new Error("useProducts must be used inside ProductProvider");
+  }
+
+  return context;
+}

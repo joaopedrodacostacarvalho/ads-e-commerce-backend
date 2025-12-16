@@ -63,7 +63,7 @@ function NavItems({ user, logout }: any) {
       <>
         <EstoqueButton />
         <VendasButton />
-        <LoginButton label="Perfil" href="/profile" />
+        <LoginButton label="Perfil" href="/client-profiler" />
         <Button onClick={logout}>Sair</Button>
       </>
     );

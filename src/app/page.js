@@ -3,6 +3,8 @@ import { useState } from 'react';
 import Link from 'next/link';
 import Navegation from './components/navegationComponents/navbar.home';
 import ProfilerConfig from './(rotas)/(client-area)/profile.client.config';
+import Products from './(rotas)/(client-area)/client-products/page';
+// import Products from './(rotas)/(client-area)/client-products/page';
 
 
 
@@ -20,7 +22,7 @@ import ProfilerConfig from './(rotas)/(client-area)/profile.client.config';
     <>
     <Navegation />
     <div>
-
+      <Products/>
       {/* ter um if , se for client , rendderiza components de clients */}
       {/* Client */}
       <h1>Página home!! {contador} </h1>
