@@ -49,30 +49,45 @@ export default function Register() {
   if (user) return null;
 
   const onSubmit = async (data: RegisterFormInput) => {
-    let success = false;
     try {
-      const response = await fetch(`${BASE_URL}/auth/register`, {
+      // Create user
+      const userResponse = await fetch(`${BASE_URL}/auth/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+        body: JSON.stringify(data.user),
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Erro ao realizar login");
+      if (!userResponse.ok) {
+        const error = await userResponse.json();
+        throw new Error(error.message || "Erro ao criar usuário");
       }
 
-      const result = await response.json();
-      success = true;
-      console.log(result);
+      const userResult = await userResponse.json();
+      const userId = userResult.id;
+
+      // Create address with userId
+      const addressResponse = await fetch(`${BASE_URL}/address`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          clientId: userId,
+          ...data.address,
+          userId,
+        }),
+      });
+
+      if (!addressResponse.ok) {
+        const error = await addressResponse.json();
+        throw new Error(error.message || "Erro ao criar endereço");
+      }
+
+      reset();
       router.push("/login");
 
-    } catch (error) {
+    } catch (error: any) {
       setApiError(error.message);
-    } finally {
-      if (success) reset();
     }
-  }
+  };
 
   return (
     <>
@@ -93,9 +108,9 @@ export default function Register() {
             label="Nome"
             fullWidth
             margin="normal"
-            {...register("name")}
-            error={!errors.name}
-            helperText={errors.name?.message}
+            {...register("user.name")}
+            error={!errors.user?.name}
+            helperText={errors.user?.name?.message}
             required
           />
 
@@ -103,9 +118,9 @@ export default function Register() {
             label="Email"
             fullWidth
             margin="normal"
-            {...register("email")}
-            error={!errors.email}
-            helperText={errors.email?.message}
+            {...register("user.email")}
+            error={!errors.user?.email}
+            helperText={errors.user?.email?.message}
             required
           />
 
@@ -114,9 +129,9 @@ export default function Register() {
             type="password"
             fullWidth
             margin="normal"
-            {...register("password")}
-            error={!errors.password}
-            helperText={errors.password?.message}
+            {...register("user.password")}
+            error={!errors.user?.password}
+            helperText={errors.user?.password?.message}
             required
           />
 
@@ -124,9 +139,9 @@ export default function Register() {
             label="Telefone"
             fullWidth
             margin="normal"
-            {...register("phone")}
-            error={!errors.phone}
-            helperText={errors.phone?.message}
+            {...register("user.phone")}
+            error={!errors.user?.phone}
+            helperText={errors.user?.phone?.message}
           />
 
           <FormControl>
@@ -136,20 +151,75 @@ export default function Register() {
                 value="consumidor"
                 control={<Radio />}
                 label="Consumidor"
-                {...register("role")}
+                {...register("user.role")}
               />
               <FormControlLabel
                 value="vendedor"
                 control={<Radio />}
                 label="Vendedor"
-                {...register("role")}
+                {...register("user.role")}
               />
             </RadioGroup>
             <Typography color="error" variant="caption">
-              {errors.role?.message}
+              {errors.user?.role?.message}
             </Typography>
           </FormControl>
 
+          <Typography variant="h6" mt={3}>
+            Endereço
+          </Typography>
+
+          <TextField
+            label="Rua"
+            fullWidth
+            margin="normal"
+            {...register("address.street")}
+            error={!!errors.address?.street}
+            helperText={errors.address?.street?.message}
+          />
+
+          <TextField
+            label="Número"
+            fullWidth
+            margin="normal"
+            {...register("address.number")}
+            error={!!errors.address?.number}
+            helperText={errors.address?.number?.message}
+          />
+
+          <TextField
+            label="Complemento"
+            fullWidth
+            margin="normal"
+            {...register("address.complement")}
+          />
+
+          <TextField
+            label="Cidade"
+            fullWidth
+            margin="normal"
+            {...register("address.city")}
+            error={!!errors.address?.city}
+            helperText={errors.address?.city?.message}
+          />
+
+          <TextField
+            label="Estado"
+            fullWidth
+            margin="normal"
+            {...register("address.state")}
+            error={!!errors.address?.state}
+            helperText={errors.address?.state?.message}
+          />
+
+          <TextField
+            label="CEP"
+            fullWidth
+            margin="normal"
+            {...register("address.zipCode")}
+            error={!!errors.address?.zipCode}
+            helperText={errors.address?.zipCode?.message}
+          />
           <Button
             type="submit"
             variant="contained"
