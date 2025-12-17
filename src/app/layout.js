@@ -11,16 +11,16 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body>
-        <AuthProvider>
-          <CartProvider>
-          <ProductProvider>
-            <ThemeRegistry>
-              {/* <Navegation /> */}
-              {children}
-            </ThemeRegistry>
-          </ProductProvider>
-          </CartProvider>
-        </AuthProvider>
+        <CartProvider>
+          <AuthProvider>
+            <ProductProvider>
+              <ThemeRegistry>
+                {/* <Navegation /> */}
+                {children}
+              </ThemeRegistry>
+            </ProductProvider>
+          </AuthProvider>
+        </CartProvider>
       </body>
     </html>
   );

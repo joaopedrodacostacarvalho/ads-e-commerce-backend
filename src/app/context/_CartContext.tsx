@@ -6,6 +6,7 @@ import {
   useEffect,
   useState,
 } from "react";
+import { decodeToken } from "../(rotas)/(auth)/jwt";
 
 /* =======================
    TYPES
@@ -48,6 +49,7 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [cart, setCart] = useState<Cart | null>(null);
   const [loading, setLoading] = useState(false);
+  const [role, setRole] = useState("consumidor");
 
   const token =
     typeof window !== "undefined"
@@ -182,8 +184,16 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   ======================= */
 
   useEffect(() => {
-    if (token) fetchCart();
-  }, [token]);
+    try {
+      if (token) {
+        const user = decodeToken(token);
+        setRole(user.role);
+        if (user && user.role === "consumidor") fetchCart();
+      }
+    } catch (error) {
+      console.error("Não foi possível decodificar o token");
+    }
+  }, [token, role]);
 
   return (
     <CartContext.Provider
