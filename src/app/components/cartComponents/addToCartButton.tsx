@@ -39,10 +39,10 @@ export default function AddToCartButton({ productId }: Props) {
       variant="contained"
       // color="primary"
       onClick={handleAdd}
-      disabled={loading || user.role === "vendedor"}
+      disabled={(user) ? user.role === "vendedor" || loading : loading}
       sx={{ mt: 1, background: '#FFE600', color: 'black' }}
     >
       {loading ? 'Adicionando...' : 'Adicionar ao carrinho'}
-    </Button>
+    </Button >
   );
 }
