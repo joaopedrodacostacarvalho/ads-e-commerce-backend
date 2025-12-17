@@ -6,6 +6,8 @@ import {
   useEffect,
   useState,
 } from "react";
+import { authStorage } from "../(rotas)/(auth)/authStorage";
+import { decodeToken } from "../(rotas)/(auth)/jwt";
 
 /* =======================
    TYPES
@@ -78,12 +80,23 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         { headers }
       );
 
+      if (res.status === 401 || res.status === 403 || res.status === 404) {
+      console.info("Usuário sem carrinho disponível");
+      setCart(null);
+      return;
+      }
+
       if (!res.ok) throw new Error("Erro ao buscar carrinho");
+
+      // if(user.role == 'consumidor'){
+      //     if (!res.ok) throw new Error("Erro ao buscar carrinho");
+      // }
+      
 
       const data: Cart = await res.json();
       console.log("RETORNO DA API /cart/mycarts:", data);
       setCart(data);
-      console.log(`CART DO CONTEXT:::${data.items.length}`) //NAO VEJO PRINTADO NO CONSOLE
+      console.log(`CART DO CONTEXT:::${data?.items.length}`) //NAO VEJO PRINTADO NO CONSOLE
     } catch (error) {
       console.error(error);
     } finally {
