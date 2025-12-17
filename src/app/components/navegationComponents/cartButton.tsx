@@ -1,4 +1,4 @@
-import { Badge, IconButton, styled } from '@mui/material';
+import { Badge, Button, IconButton, styled } from '@mui/material';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import { useCart } from '../../context/_CartContext';
 import { useState } from 'react';
@@ -56,14 +56,14 @@ export default function CartButton() {
   const tamanho = cart?.items.length
   return (
     <>
-    <IconButton aria-label="cart" onClick={() => setOpen(true)}>
-      <Badge badgeContent={tamanho} color="error" sx={{}}>
-        {/* <ShoppingCartIcon sx={{'font-size': 35}}/> */}
-        <MyShoppingCartItem />
-      </Badge>
-    </IconButton>
+      <IconButton aria-label="cart" onClick={() => setOpen(true)}>
+        <Badge badgeContent={tamanho} color="error" sx={{}}>
+          {/* <ShoppingCartIcon sx={{'font-size': 35}}/> */}
+          <MyShoppingCartItem />
+        </Badge>
+      </IconButton>
 
-    <CartDrawer open={open} onClose={() => setOpen(false)} />
+      <CartDrawer open={open} onClose={() => setOpen(false)} />
     </>
   );
 }

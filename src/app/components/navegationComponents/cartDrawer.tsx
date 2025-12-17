@@ -1,106 +1,77 @@
-
 "use client";
 
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import {
-  Drawer,
-  Box,
-  Typography,
-  Divider,
-  useTheme,
-  useMediaQuery,
+  Drawer, Box, Typography, Divider, Button, CircularProgress
 } from "@mui/material";
 import { useCart } from "../../context/_CartContext";
+import { authStorage } from "../../(rotas)/(auth)/authStorage";
 
-type Props = {
-  open: boolean;
-  onClose: () => void;
-};
-
-export default function CartDrawer({ open, onClose }: Props) {
+export default function CartDrawer({ open, onClose }: any) {
   const { cart } = useCart();
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const handleCheckout = async () => {
+    setLoading(true);
+    try {
+      const token = authStorage.getToken();
+
+      // Conforme o Swagger, o endpoint de criação é /order/create
+      const response = await fetch("http://localhost:3000/order/create", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json"
+        },
+        // O Swagger não pede body para criar a partir do carrinho, enviamos vazio
+        body: JSON.stringify({})
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || "Erro ao criar pedido.");
+      }
+
+      const orderData = await response.json();
+      onClose();
+
+      // Redireciona usando o ID retornado (ex: orderData.id)
+      router.push(`/pedido/${orderData.id}`);
+
+    } catch (error: any) {
+      alert(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const total = cart?.items.reduce((acc, item) => acc + (Number(item.price) * Number(item.quantity)), 0) || 0;
 
   return (
-    <Drawer
-      anchor={isMobile ? "bottom" : "right"}
-      open={open}
-      onClose={onClose}
-      variant="temporary"
-      slotProps={{
-        paper: {
-          sx: {
-            width: isMobile ? "100%" : 380,
-            height: isMobile ? "60vh" : "100%",
-            borderTopLeftRadius: isMobile ? 16 : 0,
-            borderTopRightRadius: isMobile ? 16 : 0,
-          },
-        },
-      }}
-    >
-      <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
-        {/* HEADER */}
-        <Box sx={{ p: 2 }}>
-          <Typography variant="h6">Meu carrinho</Typography>
-        </Box>
-
+    <Drawer anchor="right" open={open} onClose={onClose}>
+      <Box sx={{ width: 380, p: 2, display: "flex", flexDirection: "column", height: "100%" }}>
+        <Typography variant="h6" gutterBottom>Meu Carrinho</Typography>
         <Divider />
-
-        {/* LISTA */}
-        <Box sx={{ flex: 1, overflowY: "auto", p: 2 }}>
-          {cart?.items.length ? (
-            cart.items.map((item) => {
-              // 🔍 LOGS IMPORTANTES
-              console.log("ITEM DO CARRINHO:", item);
-              console.log("IMAGE URL:", item.imageUrl);
-
-              return (
-                <Box
-                  key={item.id}
-                  sx={{
-                    display: "flex",
-                    gap: 2,
-                    mb: 2,
-                    alignItems: "center",
-                  }}
-                >
-                  {/* 🖼️ IMAGEM */}
-                  <Box
-                    component="img"
-                    src={item.imageUrl || "/placeholder.png"}
-                    alt={item.name}
-                    sx={{
-                      width: 64,
-                      height: 64,
-                      objectFit: "cover",
-                      borderRadius: 1,
-                      backgroundColor: "#f5f5f5",
-                    }}
-                  />
-
-                  {/* 📦 INFO */}
-                  <Box sx={{ flex: 1 }}>
-                    <Typography fontWeight="bold">
-                      {item.name}
-                    </Typography>
-
-                    <Typography variant="body2">
-                      Qtd: {item.quantity}
-                    </Typography>
-
-                    <Typography variant="body2">
-                      R$ {item.price}
-                    </Typography>
-                  </Box>
-                </Box>
-              );
-            })
-          ) : (
-            <Typography variant="body2">
-              Carrinho vazio
-            </Typography>
-          )}
+        <Box sx={{ flex: 1, mt: 2 }}>
+          {cart?.items.map((item) => (
+            <Box key={item.id} sx={{ mb: 2 }}>
+              <Typography fontWeight="bold">{item.name}</Typography>
+              <Typography variant="body2">{item.quantity}x R$ {item.price}</Typography>
+            </Box>
+          ))}
+        </Box>
+        <Box sx={{ borderTop: "1px solid #eee", pt: 2 }}>
+          <Typography variant="h6" mb={2}>Total: R$ {total.toFixed(2)}</Typography>
+          <Button
+            fullWidth
+            variant="contained"
+            onClick={handleCheckout}
+            disabled={loading || cart?.items.length === 0}
+          >
+            {loading ? <CircularProgress size={24} color="inherit" /> : "Finalizar Pedido"}
+          </Button>
         </Box>
       </Box>
     </Drawer>
