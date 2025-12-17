@@ -22,6 +22,7 @@ import { Cart_item } from './cart-item/entity/cartItem.entity';
 //import { Payament } from './payament/entity/payament.entity';
 import { PayamentModule } from './payament/payament.module';
 import { ScheduleModule } from '@nestjs/schedule';
+import { SalesModule } from './sales/sales.module';
 
 @Module({    /*PUXAR DADOS DO .ENV*/
   imports: [
@@ -56,6 +57,7 @@ import { ScheduleModule } from '@nestjs/schedule';
     CartItemModule,
     PayamentModule,
     ScheduleModule.forRoot(),
+    SalesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
