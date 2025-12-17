@@ -7,7 +7,6 @@ import Navegation from "../../../components/navegationComponents/navbar.home"
 import { Alert, Box, Button, CircularProgress, Container, Grid, IconButton, InputAdornment, TextField, Tooltip, Typography } from "@mui/material";
 import { useRouter } from "next/navigation";
 import { authStorage } from "../../(auth)/authStorage";
-import { boolean } from "zod";
 
 type UserResponse = {
   id: number;
@@ -217,7 +216,7 @@ export default function Profile() {
       }}> */}
       {/* melhorar estilo */}
       {/* </Box> */}
-      <Container maxWidth="md" sx={{ position: 'relative'}}>
+      <Container maxWidth="md" sx={{ position: 'relative' }}>
         <Box mt={4}>
           <Typography variant="h4" gutterBottom>
             Minha Conta
