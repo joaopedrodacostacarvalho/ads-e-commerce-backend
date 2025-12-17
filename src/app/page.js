@@ -7,15 +7,22 @@ import Products from './(rotas)/(client-area)/client-products/page';
 import { useCart } from './context/_CartContext';
 import { Box } from '@mui/material';
 // import Products from './(rotas)/(client-area)/client-products/page';
+import { decodeToken } from './(rotas)/(auth)/jwt';
 
 
-
-
+//IMPLEMENTAR
  export default function Home() {
 
-  const acionarContador = () => {
-  return setContador(contador + 1)
-}
+//  const token = getToken()
+//  const user = decodeToken(token)
+
+//   const acionarContador = () => {
+//   return setContador(contador + 1)
+// }
+  
+//   if(user.role = "vendedor"){
+//     renderizar para vendas
+//   }
 
   const [contador, setContador] = useState(0)
   const [mostrar, setMostrar] = useState(false)

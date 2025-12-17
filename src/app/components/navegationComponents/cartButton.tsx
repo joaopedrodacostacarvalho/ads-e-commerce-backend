@@ -1,6 +1,9 @@
 import { Badge, IconButton, styled } from '@mui/material';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import { useCart } from '../../context/_CartContext';
+import { useState } from 'react';
+import CartDrawer from './cartDrawer';
+
 
 
 
@@ -48,14 +51,19 @@ const MyShoppingCartItem = styled(ShoppingCartIcon)(({ theme }) => ({
 
 
 export default function CartButton() {
+  const [open, setOpen] = useState(false);
   const { cart, addItem, loading } = useCart();
   const tamanho = cart?.items.length
   return (
-    <IconButton aria-label="cart" sx={{}}>
+    <>
+    <IconButton aria-label="cart" onClick={() => setOpen(true)}>
       <Badge badgeContent={tamanho} color="error" sx={{}}>
         {/* <ShoppingCartIcon sx={{'font-size': 35}}/> */}
         <MyShoppingCartItem />
       </Badge>
     </IconButton>
+
+    <CartDrawer open={open} onClose={() => setOpen(false)} />
+    </>
   );
 }

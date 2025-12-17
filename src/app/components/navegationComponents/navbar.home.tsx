@@ -72,6 +72,7 @@ function NavItems({ user, logout }: any) {
   if (user.role === 'consumidor') {
     return (
       <>
+        {/* <SearchInput/> */}
         <LoginButton label="Perfil" href="/client-profiler"/>
         <HomeButton/>
         <CartButton />
@@ -118,6 +119,7 @@ export default function Navegation() {
 
             {/* Search sempre visível no mobile (não logado) */}
             {!user && <SearchInput />}
+            
 
 
             <IconButton onClick={() => setOpen(true)}>
