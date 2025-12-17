@@ -5,6 +5,8 @@ import { decodeJwt } from "jose";
 import { authStorage, TOKEN_KEY } from "./authStorage";
 import { isTokenExpired } from "./jwt";
 import { Pause } from "@mui/icons-material";
+import { useRouter } from "next/navigation";
+import { useCart } from "../../context/_CartContext";
 
 type JwtPayload = {
   sub: number;
@@ -24,6 +26,8 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 const TOKEN_CHECK_INTERVAL = 30_000; // 30 segundos
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const cart = useCart();
+  const router = useRouter();
   const [user, setUser] = useState<JwtPayload | null>(null);
   const intervalRef = useRef<NodeJS.Timeout>(null);
 
@@ -104,6 +108,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const logout = () => {
     authStorage.clearToken();
     setUser(null);
+    cart.clearCart();
+    router.push("/")
   };
 
   return (
