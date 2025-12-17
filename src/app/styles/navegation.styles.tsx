@@ -26,6 +26,9 @@ export const MyAppbar = styled(AppBar)(({ theme }) => ({
   position: 'sticky',
   marginTop: 'none',
   marginBottom: '20px',
+  display: 'flex',
+  // alignItems: 'center',
+  // justifyContent: 'space-between',
 
 
   [theme.breakpoints.down("sm")]: {

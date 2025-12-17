@@ -1,6 +1,7 @@
 import { InputBase, IconButton, styled } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
-import React from 'react';
+import React, { useState } from 'react';
+import { useProducts } from '../../(rotas)/(client-area)/client-products/_NewProductContext';
 
 
 const SearchWrapper = styled('div')(({ theme }) => ({  
@@ -23,14 +24,30 @@ const SearchWrapper = styled('div')(({ theme }) => ({
 }))
 
 export default function SearchInput() {
+  const [value, setValue] = useState("");
+  const { searchByName } = useProducts();
+
+  const handleSearch = () => {
+    searchByName(value.trim());
+  };
+
+  
   return (
     <SearchWrapper sx={{'border':'solid, 2px , red'}}>
       <InputBase
         placeholder="Search…"
-        inputProps={{ 'aria-label': 'search' }}
+        // inputProps={{ 'aria-label': 'search' }}
         sx={{ width: '100%', ml: 1 }}
+
+
+        onChange={(e) => setValue(e.target.value)}
+        inputProps={{ "aria-label": "search" }}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") handleSearch();
+        }}
+        
       />
-      <IconButton>
+      <IconButton onClick={handleSearch}>
         <SearchIcon />
       </IconButton>
     </SearchWrapper>
