@@ -5,6 +5,9 @@ import { Box, Card, CardMedia, Container, styled, Typography } from "@mui/materi
 import { useProducts } from "../../../context/_NewProductContext";
 import { ProductPagination } from "./muiPagination";
 import AddToCartButton from "../../../components/cartComponents/addToCartButton";
+// import AddToCartButton from "../../../components/cartComponents/addToCartButton";
+
+
 // import { MovieContainer, MovieCard, ContainerButn } from "./styles";
 // import { ProductPagination } from "./ProductPagination";
 
@@ -86,6 +89,8 @@ export default function Products() {
 
             <ContainerButn />
             <AddToCartButton productId={item.id} />
+             {/* <NewAddCartButton productId={item.id} /> */}
+             {/* <AddToCartButtont productId={item.id} /> */}
           </MovieCard>
         ))}
       </MovieContainer>

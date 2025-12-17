@@ -18,6 +18,7 @@ export type CartItem = {
   price: string;
   quantity: number;
   subtotal: number;
+  imageUrl:string
 };
 
 export type Cart = {
@@ -28,6 +29,7 @@ export type Cart = {
 type CartContextType = {
   cart: Cart | null;
   loading: boolean;
+  loadingProductId: number | null;
   fetchCart: () => Promise<void>;
   addItem: (productId: number, quantity: number) => Promise<void>;
   updateQuantity: (cartItemId: number, quantity: number) => Promise<void>;
@@ -64,6 +66,10 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   ======================= */
 
   const fetchCart = async () => {
+    if (!token) { 
+        setCart(null); // Garante que o estado está limpo
+        return; 
+    }
     try {
       setLoading(true);
 
@@ -88,8 +94,14 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   /* =======================
      ADD ITEM
   ======================= */
-
+  const [loadingProductId, setLoadingProductId] = useState<number | null>(null);
   const addItem = async (productId: number, quantity: number) => {
+    setLoadingProductId(productId);
+    // if (!token) {
+        
+    //     console.warn("Tentativa de adicionar item sem token. Ação bloqueada no Contexto.");
+    //     return; 
+    // }
     try {
       setLoading(true);
 
@@ -104,6 +116,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       console.error(error);
     } finally {
       setLoading(false);
+      setLoadingProductId(null);
     }
   };
 
@@ -190,6 +203,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       value={{
         cart,
         loading,
+        loadingProductId,
         fetchCart,
         addItem,
         updateQuantity,
