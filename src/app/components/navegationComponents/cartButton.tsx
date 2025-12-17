@@ -1,9 +1,10 @@
 import { Badge, IconButton, styled } from '@mui/material';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import { useCart } from '../../context/_CartContext';
 
 
 
-const myIconButton = styled(IconButton)(({ theme }) => ({  
+const myIconButton = styled(IconButton)(({ theme }) => ({
   border: 'solid 2px red',
   backGround: 'whithe'
 
@@ -11,35 +12,35 @@ const myIconButton = styled(IconButton)(({ theme }) => ({
   //   width: '200px',
   //   height: '40px'
   // },
-  
+
   // [theme.breakpoints.down("sm")]: {
   //   width: '150px',
   //   height: '30px'
   // }
 }))
 
-const myBadge = styled(Badge)(({ theme }) => ({  
+const myBadge = styled(Badge)(({ theme }) => ({
   'border': 'solid 2px green',
   //  [theme.breakpoints.down("md")]: {
   //   width: '200px',
   //   height: '40px'
   // },
-  
+
   // [theme.breakpoints.down("sm")]: {
   //   width: '150px',
   //   height: '30px'
   // }
 }))
 
-const MyShoppingCartItem = styled(ShoppingCartIcon)(({ theme }) => ({  
-  fontSize: 35, 
+const MyShoppingCartItem = styled(ShoppingCartIcon)(({ theme }) => ({
+  fontSize: 35,
   color: 'black',
   // border: 'solid 2px yellow',
   //  [theme.breakpoints.down("md")]: {
   //   width: '200px',
   //   height: '40px'
   // },
-  
+
   [theme.breakpoints.down("sm")]: {
     fontSize: 28
   }
@@ -47,11 +48,13 @@ const MyShoppingCartItem = styled(ShoppingCartIcon)(({ theme }) => ({
 
 
 export default function CartButton() {
+  const { cart, addItem, loading } = useCart();
+  const tamanho = cart?.items.length
   return (
-    <IconButton  aria-label="cart" sx={{}}>
-      <Badge badgeContent={3} color="error" sx={{}}>
+    <IconButton aria-label="cart" sx={{}}>
+      <Badge badgeContent={tamanho} color="error" sx={{}}>
         {/* <ShoppingCartIcon sx={{'font-size': 35}}/> */}
-        <MyShoppingCartItem/>
+        <MyShoppingCartItem />
       </Badge>
     </IconButton>
   );

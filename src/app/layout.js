@@ -3,7 +3,8 @@ import "./globals.css";
 import Navegation from "./components/navegationComponents/navbar.home";
 import ThemeRegistry from "./infra/themeregistry";
 import { AuthProvider } from "./(rotas)/(auth)/_AuthContext";
-import { ProductProvider } from "./(rotas)/(client-area)/client-products/_NewProductContext";
+import { ProductProvider } from "./context/_NewProductContext";
+import { CartProvider } from "./context/_CartContext";
 // import { ProductProvider } from "./(rotas)/(client-area)/client-products/_ProductContext";
 
 export default function RootLayout({ children }) {
@@ -11,12 +12,14 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body>
         <AuthProvider>
+          <CartProvider>
           <ProductProvider>
-          <ThemeRegistry>
-            {/* <Navegation /> */}
-            {children}
-          </ThemeRegistry>
+            <ThemeRegistry>
+              {/* <Navegation /> */}
+              {children}
+            </ThemeRegistry>
           </ProductProvider>
+          </CartProvider>
         </AuthProvider>
       </body>
     </html>

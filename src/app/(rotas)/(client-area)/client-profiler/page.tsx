@@ -206,7 +206,18 @@ export default function Profile() {
   return (
     <>
       <Navegation />
-      <Container maxWidth="md">
+      {/* <Box sx={{
+        width: '100%',
+        height: '200px',
+        background: '#FFE600',
+        m: 0,
+        position: 'relative'
+
+
+      }}> */}
+      {/* melhorar estilo */}
+      {/* </Box> */}
+      <Container maxWidth="md" sx={{ position: 'relative'}}>
         <Box mt={4}>
           <Typography variant="h4" gutterBottom>
             Minha Conta
@@ -227,11 +238,12 @@ export default function Profile() {
           <Grid container spacing={2}>
 
             <Grid size={{ xs: 12 }} >
-              <Box>
+              <Box >
                 <Typography
                   variant="caption"
                   color="text.secondary"
                   display="block"
+
                 >
                   Perfil
                 </Typography>
@@ -253,6 +265,7 @@ export default function Profile() {
                 fullWidth
                 value={profile.name}
                 disabled={!editing}
+
                 onChange={(e) =>
                   handleChangeUser("name", e.target.value)
                 }

@@ -23,6 +23,7 @@ import EstoqueButton from "./sellerComponent/estoque";
 import VendasButton from "./sellerComponent/vendas";
 
 import MenuIcon from '@mui/icons-material/Menu';
+import HomeButton from "./forHomeButton";
 
 
 const MyBox = styled(Box)(({ theme }) => ({
@@ -50,10 +51,9 @@ function NavItems({ user, logout }: any) {
          {/* Só no Desktop, exibe Search quando não logado */}
          {/* {!isMobile && !user && <SearchInput />} */}
         {/* <SearchInput /> */}
-
-
-        <CartButton />
         <LoginButton label="Login" href="/login" />
+        <HomeButton/>
+        <CartButton />
       </>
     );
   }
@@ -73,6 +73,7 @@ function NavItems({ user, logout }: any) {
     return (
       <>
         <LoginButton label="Perfil" href="/client-profiler"/>
+        <HomeButton/>
         <CartButton />
         <Button onClick={logout}>Sair</Button>
       </>
@@ -97,7 +98,7 @@ export default function Navegation() {
   return (
     <>
       <>
-      <MyAppbar position="static">
+      <MyAppbar position="static" sx={{}}>
         <MyTooldbar>
         <Link href="/" passHref>
           <MyImage src={logo} alt="Logo" />
@@ -129,7 +130,7 @@ export default function Navegation() {
               onClose={() => setOpen(false)}
               sx={{width: 130, p: 2}}
             >
-              <Box sx={{ width: 140, height: '100%', p: 2, border: 'solid 2px red', display: 'flex', flexDirection: 'column', justifyContent: 'start', alignItems: 'center' }}>
+              <Box sx={{ width: 140, height: '100%', p: 2, border: 'solid 2px red', display: 'flex', flexDirection: 'column', justifyContent: 'start', alignItems: 'center', gap:1 }}>
                 <NavItems user={user} logout={logout} />
               </Box>
             </Drawer>

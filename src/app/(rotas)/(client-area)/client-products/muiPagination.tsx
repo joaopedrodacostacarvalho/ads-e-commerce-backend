@@ -1,5 +1,5 @@
 import { Pagination, Stack } from "@mui/material";
-import { useProducts } from "./_NewProductContext";
+import { useProducts } from "../../../context/_NewProductContext";
 
 
 export function ProductPagination() {
@@ -14,15 +14,15 @@ export function ProductPagination() {
         page={page}
         onChange={(_, value) => setPage(value)}
         sx={{
-      '& .Mui-selected': {
-        backgroundColor: '#FFE600',
-        color: '#000',
-      },
-      '& .MuiPaginationItem-root:hover': {
-        backgroundColor: '#FFE600',
-        opacity: 0.8,
-      },
-    }}
+          '& .Mui-selected': {
+            backgroundColor: '#FFE600',
+            color: '#000',
+          },
+          '& .MuiPaginationItem-root:hover': {
+            backgroundColor: '#FFE600',
+            opacity: 0.8,
+          },
+        }}
       />
     </Stack>
   );

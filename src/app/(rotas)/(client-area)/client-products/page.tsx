@@ -2,8 +2,9 @@
 
 
 import { Box, Card, CardMedia, Container, styled, Typography } from "@mui/material";
-import { useProducts } from "./_NewProductContext";
+import { useProducts } from "../../../context/_NewProductContext";
 import { ProductPagination } from "./muiPagination";
+import AddToCartButton from "../../../components/cartComponents/addToCartButton";
 // import { MovieContainer, MovieCard, ContainerButn } from "./styles";
 // import { ProductPagination } from "./ProductPagination";
 
@@ -14,7 +15,7 @@ export const MovieContainer = styled(Container)(({ theme }) => ({
   // maxHeight: 1100,
   paddingTop: 10,
   overflow: 'auto',
-  gap: 10,
+  gap: 20,
   gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))',
 
   marginTop: 20,
@@ -29,7 +30,8 @@ export const MovieContainer = styled(Container)(({ theme }) => ({
     maxWidth: 300,
     // margin: 0,
     paddinf: 0,
-    margin: 'auto'
+    margin: 'auto',
+    mt: 10
   }
 
 }))
@@ -59,8 +61,8 @@ export default function Products() {
 
   return (
     <>
-      <MovieContainer>
-        {loading ? "CARREGANDO...":loading}
+      <MovieContainer sx={{mt:8}} >
+        {loading ? "CARREGANDO..." : loading}
         {products.map((item) => (
           <MovieCard key={item.id}>
             <CardMedia
@@ -83,10 +85,11 @@ export default function Products() {
             </Typography>
 
             <ContainerButn />
+            <AddToCartButton productId={item.id} />
           </MovieCard>
         ))}
       </MovieContainer>
-      
+
       <ProductPagination />
     </>
   );
