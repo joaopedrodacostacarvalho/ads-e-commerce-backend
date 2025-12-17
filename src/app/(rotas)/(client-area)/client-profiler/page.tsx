@@ -106,7 +106,13 @@ export default function Profile() {
     fetchAddress();
   }, [user]);
 
-  if (!user && !loading) return router.push("/login");
+  // if (!user && !loading) return router.push("/login");
+  useEffect(() => {
+  if (!loading && !user) {
+    router.push("/login");
+  }
+}, [loading, user, router]);
+
 
   if (loading) return (
     <>
@@ -116,6 +122,11 @@ export default function Profile() {
       </Box>
     </>
   );
+
+  if (!user) {
+  // enquanto redireciona, não renderiza nada
+    return null;
+   }
 
   const handleChangeUser = (field: keyof UserResponse, value: string) => {
     if (!profile) return;
